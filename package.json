@@ -1,0 +1,26 @@
+{
+  "name": "icdlp_checklist",
+  "version": "1.0.0",
+  "description": "Automatic checker for some of icdlp requirements",
+  "main": "index.js",
+  "scripts": {
+    "test": "sgmf-scripts --test test/**/*.js"
+  },
+  "author": "Rostyslav Stepanchuk",
+  "license": "ISC",
+  "configurations": {
+    "sourceProject": "../thomsonreuters",
+    "platformVersion": "20.3",
+    "compatibility": "19.10",
+    "cartridgeVersion": "20.1.0",
+    "sfraVersion": "4.4.1",
+    "genesisVersion": "105.0.0"
+  },
+  "spreadSheet": "1LFCqtO1v0KMW7EbE7oD8_EfPAdXeevcmOxQVYFEHLBw",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.1",
+    "node-stream-zip": "^1.9.1",
+    "sgmf-scripts": "^2.3.0"
+  }
+}
