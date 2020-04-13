@@ -27,7 +27,11 @@ const attentionMark = (file) => {
 const skipped = sourceFiles.cartridges.pipelines.concat(['sg_changes', 'client','static']);
 const files = sourceFiles.getFiles('.isml|.js', '/cartridges', skipped);
 const text = files.map(path => `\n${path.replace(config.sourcePath + '\\cartridges\\', '')}${attentionMark(path)}`);
+const outputFolder = './output'
 
+if (!fs.existsSync(outputFolder)){
+    fs.mkdirSync(outputFolder);
+}
 fs.writeFile('./output/fileNames.txt', text ,(err)=>{
     if (err){
         throw new Error('CHECKER ERROR: Unable to write filenames to file fileNames.txt');
