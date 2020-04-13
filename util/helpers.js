@@ -12,12 +12,13 @@ const findSearchMatchVariables = (code, searchMask, groupToSave = 1) => {
     return result;
 }
 
-const addVariablesToSearchMask = (varArr, mask, injectSuffix='') => {
+const createRegExWithVariables = (varArr, mask, injectSuffix='') => {
     const regExpInject = varArr.length > 0 ? `${varArr.join('|')}${injectSuffix}` : '';
-    return mask.replace(VAR_PLACEHOLDER, regExpInject);
+    const finalMask = mask.replace(VAR_PLACEHOLDER, regExpInject);
+    return new RegExp(finalMask, 'gm');
 }
 
 module.exports = {
     findSearchMatchVariables,
-    addVariablesToSearchMask
+    createRegExWithVariables
 }

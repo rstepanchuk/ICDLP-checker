@@ -2,7 +2,7 @@
 
 const assert = require('chai').assert;
 const sourceFiles = require('../../util/sourceFiles');
-const helpers = require('../../util/helpers');
+
 const {
     INVALID_REQUIRE_MASK,
     TODO_MASK,
@@ -14,8 +14,10 @@ const {
     SEEKABLE_ITERATOR_VARIABLE_MASK
 } = require('../../util/constants');
 
-const addVariablesToSearchMask = helpers.addVariablesToSearchMask;
-const findSearchMatchVariables = helpers.findSearchMatchVariables;
+const { 
+    createRegExWithVariables,
+    findSearchMatchVariables
+} = require('../../util/helpers');
 
 const getUnclosedErrorMessage = (notClosedArr) => {
     return notClosedArr.map(obj => `SCRIPT: ${obj.script}\n OPEN FOUND: ${obj.open}\n CLOSED FOUND: ${obj.closed}\n`)
@@ -55,8 +57,7 @@ describe('General', function() {
         sourceFiles.scripts.forEach(file => {
             const code = sourceFiles.getFileData(file);
             const sessionVars = findSearchMatchVariables(code, SESSION_VARIABLE_MASK); // find session that was saved to variables
-            const finalSessionCustomMask = addVariablesToSearchMask(sessionVars, SESSION_CUSTOM_MASK, '|')// add found variables to regexp
-            const sessionCustomRegExp = new RegExp(finalSessionCustomMask, 'gmi');
+            const sessionCustomRegExp = createRegExWithVariables(sessionVars, SESSION_CUSTOM_MASK, '|')// add found variables to regexp
             const sesCustom = code.match(sessionCustomRegExp);
             if (sesCustom) {
                 foundCustom.push(`\nSCRIPT: ${file}\nFOUND: ${sesCustom.map(found => '\n      '+ found)}}`)
@@ -72,8 +73,7 @@ describe('General', function() {
             const code = sourceFiles.getFileData(file);
             const open = findSearchMatchVariables(code, READER_WRITER_VARIABLE_MASK);
             if (open.length > 0) {
-                const finalSearchMask = addVariablesToSearchMask(open, CLOSED_VARIABLE_MASK)
-                const closedRegExp = new RegExp(finalSearchMask, 'gmi');
+                const closedRegExp = createRegExWithVariables(open, CLOSED_VARIABLE_MASK)
                 const closed = code.match(closedRegExp) || [];
                 if (open.length !== closed.length) {
                     notClosed.push({
@@ -94,16 +94,14 @@ describe('General', function() {
             const code = sourceFiles.getFileData(file);
             for (let cl in METHODS_WITH_SEEKABLE_ITERATOR) {
                 if (code.includes(cl)){
-                    const seekIteratorMask = addVariablesToSearchMask(METHODS_WITH_SEEKABLE_ITERATOR[cl], SEEKABLE_ITERATOR_VARIABLE_MASK);
-                    const seekIteratorRegExp = new RegExp(seekIteratorMask, 'gmi'); //searching methods that return seekIterator and extracting variables that are actual iterators
+                    const seekIteratorRegExp = createRegExWithVariables(METHODS_WITH_SEEKABLE_ITERATOR[cl], SEEKABLE_ITERATOR_VARIABLE_MASK); //searching methods that return seekIterator and extracting variables that are actual iterators
                     const iterators = [];
                     let found;
                     while (found = seekIteratorRegExp.exec(code)){
                         iterators.push(found[1])
                     }
                     if (iterators.length > 0) {
-                        const closedIteratorMask = addVariablesToSearchMask(iterators, CLOSED_VARIABLE_MASK);
-                        const closedIteratorRegExp = new RegExp(closedIteratorMask, 'gmi');
+                        const closedIteratorRegExp = createRegExWithVariables(iterators, CLOSED_VARIABLE_MASK);
                         const closed = code.match(closedIteratorRegExp) || [];
                         if (iterators.length !== closed.length) {
                             notClosed.push({
