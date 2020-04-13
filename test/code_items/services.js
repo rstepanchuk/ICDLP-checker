@@ -2,9 +2,47 @@
 
 const assert = require('chai').assert;
 const sourceFiles = require('../../util/sourceFiles');
+const helpers = require('../../util/helpers');
 // const CLIENT_CREATING_MASK = 'new\\s([A-z.]+\\.)?(HTTPClient|FTPClient|SFTPClient)\\('
-const { SERVICE_REGISTRY_MASK } = require('../../util/constants');
+const {
+    SERVICE_REGISTRY_MASK,
+    LOCAL_SERVICE_REGISTRY_MASK,
+    SERVICE_REGISTRY_VARIABLE_MASK,
+    SERVICE_CREATED_MASK,
+    FILTER_LOG_MESSAGE_METHOD,
+    GET_REQUEST_LOG_MESSAGE_METHOD,
+    GET_RESPONSE_LOG_MESSAGE_METHOD
+} = require('../../util/constants');
 
+const collectCreatedServices = (code, regExp) => {
+    const createdServices = [];
+    let found;
+    let serviceIdx = 0;
+    while (found = regExp.exec(code)){ // collect information about each service
+        createdServices.push({
+            name: found[1],
+            funcStart: found.index
+        })
+        if (serviceIdx > 0) {
+            createdServices[serviceIdx-1].funcEnd = found.index
+        }
+        serviceIdx++;
+    }
+    if (createdServices.length === 0) {
+        throw new Error('ServiceRegistry was imported, but no created servcies were found')
+    }
+    return createdServices;
+}
+
+const getMessageLogErrorMessage = (violation) => {
+    return violation.map(obj => `\nSCRIPT: ${obj.script}\n` +
+    `SERVICE: ${obj.service} \n` +
+    `METHODS FOUND: \n` +
+    `filterLogMessage: ${obj.presentMethods.filterLogMessage}\n` +
+    `getRequestLogMessage: ${obj.presentMethods.getRequestLogMessage}\n` +
+    `getResonseLogMessage: ${obj.presentMethods.getResponseLogMessage}\n`
+    )
+}
 describe('Services', function() {
 
         it('All FTPClient, SFTPClient, Webreference, Webdav, and HTTPClient calls should be called via the Service Framework.', function() {
@@ -25,6 +63,41 @@ describe('Services', function() {
                 }
             })
             assert.isEmpty(serviceRegistries, `ServiceRegistry imports found: ${serviceRegistries}`)
+        });
+
+        it('The callback filterLogMessage or both getRequestLogMessage and getResponseLogMessage should be implemented for every service definition.', function() {
+            const violations = [];
+            const serviceRegistryRegExp = new RegExp(LOCAL_SERVICE_REGISTRY_MASK, 'm'); 
+            sourceFiles.scripts.forEach(script => {
+                const code = sourceFiles.getFileData(script);
+                if (serviceRegistryRegExp.test(code)) { // if ServiceRegistry is mentioned on page
+                    const servRegistryVars = helpers.findSearchMatchVariables(code, SERVICE_REGISTRY_VARIABLE_MASK); // check if ServiceRegistry was saved under differently named variable
+                    const createdServiceRegExp = helpers.createRegExWithVariables(servRegistryVars, SERVICE_CREATED_MASK, '|' );
+                    const createdServices = collectCreatedServices(code, createdServiceRegExp); // get all created service to investigate neccessary method presence
+                    createdServices.forEach(service => {
+                        const presentMethods = {
+                            filterLogMessage: false,
+                            getRequestLogMessage: false,
+                            getResponseLogMessage: false
+                        }
+                        const scope = code.substring(service.funcStart, service.funcEnd);
+                        presentMethods.filterLogMessage = new RegExp(FILTER_LOG_MESSAGE_METHOD, 'm').test(scope);
+                        
+                        if (!presentMethods.filterLogMessage) {
+                            presentMethods.getRequestLogMessage = new RegExp(GET_REQUEST_LOG_MESSAGE_METHOD, 'm').test(scope);
+                            presentMethods.getResponseLogMessage = new RegExp(GET_RESPONSE_LOG_MESSAGE_METHOD, 'm').test(scope);
+                            if (!presentMethods.getRequestLogMessage || !presentMethods.getResponseLogMessage) {
+                                violations.push({
+                                    script,
+                                    service: service.name,
+                                    presentMethods
+                                })
+                            }
+                        }
+                    })
+                }
+            })
+            assert.isEmpty(violations, `For some services logMessage methods weren't defined: ${getMessageLogErrorMessage(violations)}`)
         });
     
 });

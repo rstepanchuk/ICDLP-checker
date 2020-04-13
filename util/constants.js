@@ -46,6 +46,13 @@ module.exports = {
     PASCAL_CASE_MASK: '^([A-Z]+[a-z]+)+\.[a-z]+$',
 
     //code_items/services.js
-    SERVICE_REGISTRY_MASK: '.*dw[\\/\\.]svc[\\/\\.]ServiceRegistry.*'
+    SERVICE_REGISTRY_MASK: '.*dw[\\/\\.]svc[\\/\\.]ServiceRegistry.*',
+    LOCAL_SERVICE_REGISTRY_MASK: '.*dw[\\/\\.]svc[\\/\\.](Local)?ServiceRegistry.*',
+    SERVICE_REGISTRY_VARIABLE_MASK: '([A-z]+)\\s?=\\s?.*ServiceRegistry[^.]',
+    SERVICE_CREATED_MASK: `(?:${VAR_PLACEHOLDER}(?:Local)?ServiceRegistry(?:["']\\))?)\\.createService\\('([\\w.]+)'`,
+    FILTER_LOG_MESSAGE_METHOD: 'filterLogMessage:\\s?function\\s?\\(',
+    GET_REQUEST_LOG_MESSAGE_METHOD: 'getRequestLogMessage:\\s?function\\s?\\(',
+    GET_RESPONSE_LOG_MESSAGE_METHOD: 'getResponseLogMessage:\\s?function\\s?\\(',
+
 
 }
