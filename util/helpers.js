@@ -1,6 +1,6 @@
 'use strict'
 
-const CNST = require('./constants');
+const { VAR_PLACEHOLDER } = require('./constants');
 
 const findSearchMatchVariables = (code, searchMask, groupToSave = 1) => {
     const result = [];
@@ -14,7 +14,7 @@ const findSearchMatchVariables = (code, searchMask, groupToSave = 1) => {
 
 const addVariablesToSearchMask = (varArr, mask, injectSuffix='') => {
     const regExpInject = varArr.length > 0 ? `${varArr.join('|')}${injectSuffix}` : '';
-    return mask.replace(CNST.VAR_PLACEHOLDER, regExpInject);
+    return mask.replace(VAR_PLACEHOLDER, regExpInject);
 }
 
 module.exports = {

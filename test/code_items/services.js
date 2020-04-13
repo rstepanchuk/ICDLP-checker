@@ -2,8 +2,8 @@
 
 const assert = require('chai').assert;
 const sourceFiles = require('../../util/sourceFiles');
-const CLIENT_CREATING_MASK = 'new\\s([A-z.]+\\.)?(HTTPClient|FTPClient|SFTPClient)\\('
-const SERVICE_REGISTRY_MASK = '.*dw[\\/\\.]svc[\\/\\.]ServiceRegistry.*'
+// const CLIENT_CREATING_MASK = 'new\\s([A-z.]+\\.)?(HTTPClient|FTPClient|SFTPClient)\\('
+const { SERVICE_REGISTRY_MASK } = require('../../util/constants');
 
 describe('Services', function() {
 

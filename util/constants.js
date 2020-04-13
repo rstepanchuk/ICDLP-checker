@@ -45,6 +45,7 @@ module.exports = {
     CAMEL_CASE_MASK: '^[a-z]+([A-Z]+[a-z]+)+\.[a-z]+$',
     PASCAL_CASE_MASK: '^([A-Z]+[a-z]+)+\.[a-z]+$',
 
-
+    //code_items/services.js
+    SERVICE_REGISTRY_MASK: '.*dw[\\/\\.]svc[\\/\\.]ServiceRegistry.*'
 
 }

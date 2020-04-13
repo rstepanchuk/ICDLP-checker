@@ -3,21 +3,25 @@
 const fs = require('fs');
 const config = require('../../util/config');
 const sourceFiles = require('../../util/sourceFiles');
-const CNST = require('../../util/constants');
+const {
+    PASCAL_CASE_MASK,
+    CAMEL_CASE_MASK,
+    ROW_MAX_LENGTH,
+} = require('../../util/constants');
 
 const fileNameIsValid = (file) => {
     const fileName = file.split('\\').pop();
     if (file.includes('\\controllers\\')){
-        return new RegExp(CNST.PASCAL_CASE_MASK).test(fileName);
+        return new RegExp(PASCAL_CASE_MASK).test(fileName);
     }
     if (file.includes('controllers') && file.includes('\\templates\\')) { // both cases are allowed for templates in controllers cartridge
         return true;
     }
-    return new RegExp(CNST.CAMEL_CASE_MASK).test(fileName);
+    return new RegExp(CAMEL_CASE_MASK).test(fileName);
 }
 
 const attentionMark = (file) => {
-    const arrowLength = CNST.ROW_MAX_LENGTH - file.length > 2 ? CNST.ROW_MAX_LENGTH - file.length : 10;
+    const arrowLength = ROW_MAX_LENGTH - file.length > 2 ? ROW_MAX_LENGTH - file.length : 10;
     if (!fileNameIsValid(file)){
         return ` <${new Array(arrowLength).join('-')}NEEDS CHECK`;
     }

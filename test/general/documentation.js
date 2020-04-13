@@ -5,15 +5,18 @@ const sourceFiles = require('../../util/sourceFiles');
 const docExtractor = require('../../util/docExtractor');
 const config = require('../../util/config');
 
-const SFRA_SPECIFIC_VERSTION_MASK = `sfra\\D*${config.sfra}`;
-const SFRA_ANY_VERSION_MASK = `sfra\\D*(\\d\\.\\d.\\d)`;
-const PLATFORM_SPECIFIC_VERSION_MASK = `(sfcc|salesforce|api|platform)\\D*${config.platform}`;
-const PLATFORM_ANY_VERSION_MASK = `(sfcc|salesforce|api|platform)\\D*(\\d{2}\\.\\d{1,2})`;
-const SITEGEN_SPECIFIC_VERSION_MASK = `(sitegen|genes|sg)\\D{0,25}${config.genesis}`;
-const SITEGEN_ANY_VERSION_MASK = `(sitegen|genes|sg)\\D{0,25}(\\d{3}\\.\\d{1,2}.\\d{1,2})`;
-const COMPATIBILITY_SPECIFIC_VERSION_MASK = `compatibility\\D*${config.compatibility}`;
-const COMPATIBILITY_ANY_VERSION_MASK = `compatibility\\D*(\\d{2}\\.\\d{1,2})`;
-const MINIMAL_AVAILABILITY_SECTION_LENGTH = 100;
+const {
+    SFRA_SPECIFIC_VERSTION_MASK, 
+    SFRA_ANY_VERSION_MASK,
+    PLATFORM_SPECIFIC_VERSION_MASK,
+    PLATFORM_ANY_VERSION_MASK,
+    SITEGEN_SPECIFIC_VERSION_MASK,
+    SITEGEN_ANY_VERSION_MASK,
+    COMPATIBILITY_SPECIFIC_VERSION_MASK,
+    COMPATIBILITY_ANY_VERSION_MASK,
+    MINIMAL_AVAILABILITY_SECTION_LENGTH
+ } = require('../../util/constants');
+
 
 const alternativeFound = (tartgetText, searchMask) => {
     const otherFound = new RegExp(searchMask,'m')
