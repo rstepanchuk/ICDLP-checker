@@ -24,7 +24,7 @@ const attentionMark = (file) => {
     return '';
 }
 
-const skipped = sourceFiles.cartridges.pipelines.concat(['sg_changes', 'client','static']);
+const skipped = sourceFiles.cartridges.pipelines.concat(['*changes', 'client','static']);
 const files = sourceFiles.getFiles('.isml|.js', '/cartridges', skipped);
 const text = files.map(path => `\n${path.replace(config.sourcePath + '\\cartridges\\', '')}${attentionMark(path)}`);
 const outputFolder = './output'

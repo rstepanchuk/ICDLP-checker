@@ -31,7 +31,7 @@ describe('General', function() {
 
         const toDoRegExp = new RegExp(CNST.TODO_MASK, 'gm');
         const toDos = [];
-        sourceFiles.getFiles('', '/cartridges', ['static', 'sg_changes']).forEach(file => {
+        sourceFiles.getFiles('', '/cartridges', ['static']).forEach(file => {
             const foundTODO = sourceFiles.getFileData(file).match(toDoRegExp);
             if (foundTODO) {
                 toDos.push(`\nSCRIPT: ${file}\nFOUND: ${foundTODO.map(imp => '\n      '+ imp)}}`);

@@ -15,9 +15,10 @@ const METHODS_WITH_SEEKABLE_ITERATOR = { // Methods that can return seekable ite
 const VAR_PLACEHOLDER = '<%vars>'
 const ALLOWED_IMPORTS_REGEXP_ADAPTED = ALLOWED_IMPORTS_PATTERNS.map(pattern => pattern.replace(/\.|\*|\//, '\\$&'));// same as ALLOWED_IMPORTS_PATTERNS but transformed to regex format
 
-
 module.exports = {
-    // SEARCH PATTERNS *******************************************************************************
+    // common
+    VAR_PLACEHOLDER,
+
     //general/documenation.js
     SFRA_SPECIFIC_VERSTION_MASK: `sfra\\D*${config.sfra}`,
     SFRA_ANY_VERSION_MASK: `sfra\\D*(\\d\\.\\d.\\d)`,

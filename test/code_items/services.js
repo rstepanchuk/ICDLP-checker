@@ -26,17 +26,5 @@ describe('Services', function() {
             })
             assert.isEmpty(serviceRegistries, `ServiceRegistry imports found: ${serviceRegistries}`)
         });
-
-        it('LocalServiceRegistry should be used instead of ServiceRegistry', function() {
-            const serviceRegistries = [];
-            const serviceRegistryRegExp = new RegExp(SERVICE_REGISTRY_MASK, 'gmi');
-            sourceFiles.scripts.forEach(script => {
-                const foundInvalid = sourceFiles.getFileData(script).match(serviceRegistryRegExp);
-                if (foundInvalid) {
-                    serviceRegistries.push(`\nSCRIPT: ${script}\nFOUND_IMPORTS: ${foundInvalid.map(imp => '\n      '+ imp)}}`);
-                }
-            })
-            assert.isEmpty(serviceRegistries, `ServiceRegistry imports found: ${serviceRegistries}`)
-        });
     
 });

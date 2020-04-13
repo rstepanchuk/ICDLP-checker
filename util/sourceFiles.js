@@ -5,7 +5,10 @@ const path = require('path');
 const config = require('./config');
 
 const sourcePath = config.sourcePath;
-const SKIPPED_BY_DEFAULT = ['node_modules'];
+const alwaysSkippedFolders = ['node_modules'];
+if (config.ChgCartridgesExcluded) {
+    alwaysSkippedFolders.push('*changes')
+}
 
 const getFiles = (namePart, relpath, skippedFolders) => {
     const dirPath = relpath ? sourcePath + relpath : sourcePath;
@@ -23,8 +26,23 @@ const endingsDoMatch = (filename, namePart) => {
     return endings.some(end=>filename.endsWith(end))
 }
 
+const folderIsSkipped = (folderName, skippedArr) => {
+    for (const toSkip of skippedArr) {
+        if (toSkip === folderName) {
+            return true;
+        }
+        if (toSkip.includes('*')) {
+            const regExp = new RegExp(`^${toSkip.replace('*','.*')}$`)
+            if (regExp.test(folderName)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 const _getFiles = (namePart, dirPath, skippedFolders =[]) => {
-    const skipped = [...SKIPPED_BY_DEFAULT];
+    const skipped = [...alwaysSkippedFolders];
     skippedFolders.forEach(fold => {
         if (!skipped.some(dir => dir === fold)){
             skipped.push(fold)
@@ -32,14 +50,14 @@ const _getFiles = (namePart, dirPath, skippedFolders =[]) => {
     });
     const result = [];
     const files = fs.readdirSync(dirPath);
-    files
-        .filter(f=> !skipped.some(dir=>dir===f))
-        .map(f=>path.join(dirPath, f))
-        .forEach(f=>{
-            if (fs.statSync(f).isDirectory()){
-                _getFiles(namePart, f, skippedFolders).forEach(r=>result.push(r))
-            } else if (endingsDoMatch(f, namePart)) {
-                result.push(f)
+    files.forEach(file => {
+            const filePath = path.join(dirPath, file)
+            if (fs.statSync(filePath).isDirectory()){
+                if (!folderIsSkipped(file, skipped)) {
+                    _getFiles(namePart, filePath, skippedFolders).forEach(r=>result.push(r))
+                }
+            } else if (endingsDoMatch(file, namePart)) {
+                result.push(filePath)
             }
         })
     return result;
@@ -87,7 +105,7 @@ const getCartrides = () => {
 }
 
 
-module.exports.scripts = getFiles('.js|.ds', '/cartridges',['static','client'])
+module.exports.scripts = getFiles('.js|.ds', '/cartridges',['static','client']);
 module.exports.json = getJSON();
 module.exports.cartridges = getCartrides();
 module.exports.getFiles = getFiles;
