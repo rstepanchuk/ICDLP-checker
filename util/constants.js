@@ -56,7 +56,12 @@ module.exports = {
     GET_REQUEST_LOG_MESSAGE_METHOD: 'getRequestLogMessage:\\s?function\\s?\\(',
     GET_RESPONSE_LOG_MESSAGE_METHOD: 'getResponseLogMessage:\\s?function\\s?\\(',
 
-    //code_items/clientSide.js
+    //code_items/clientSideJS.js
     HARD_CODED_URL,
-    COMMENTED_HARD_CODED_URL: `${COMMENT_MASK}${HARD_CODED_URL}`
+    COMMENTED_HARD_CODED_URL: `${COMMENT_MASK}${HARD_CODED_URL}`,
+
+    //code_items/clientSideSCSS.js
+    MAXIMUM_ALLOWED_SIZE_IN_PX: 5,
+    SIZE_IN_PX: '.*?(\\d{1,5})px',
+    IMPORTANT_CSS: '.*!important.*'
 }

@@ -115,6 +115,8 @@ const getCartrides = () => {
 
 
 module.exports.scripts = getFiles('.js|.ds', '/cartridges',{skip: ['static','client']});
+module.exports.styles = getFiles('.css|.scss', '/cartridges', { pick: ['css', 'scss'] });
+module.exports.clientScripts = getFiles('.js', '/cartridges', { pick: ['client/default/js', 'js/pages', 'static'] });
 module.exports.json = getJSON();
 module.exports.cartridges = getCartrides();
 module.exports.getFiles = getFiles;
