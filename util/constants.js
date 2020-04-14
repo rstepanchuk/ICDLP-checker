@@ -12,8 +12,10 @@ const METHODS_WITH_SEEKABLE_ITERATOR = { // Methods that can return seekable ite
 };
 
 // UTILITY CONSTANTS THAT ARE USED FOR GENERATING EXPORT**********************************************
-const VAR_PLACEHOLDER = '<%vars>'
-const ALLOWED_IMPORTS_REGEXP_ADAPTED = ALLOWED_IMPORTS_PATTERNS.map(pattern => pattern.replace(/\.|\*|\//, '\\$&'));// same as ALLOWED_IMPORTS_PATTERNS but transformed to regex format
+const VAR_PLACEHOLDER = '<%vars>';
+const COMMENT_MASK = `(^\\s*\\*.*|.*//.*|/\\*\\*?)`;
+const HARD_CODED_URL = '.*https?://.*';
+const ALLOWED_IMPORTS_REGEXP_ADAPTED = ALLOWED_IMPORTS_PATTERNS.map(pattern => pattern.replace(/\.|\*|\//g, '\\$&'));// same as ALLOWED_IMPORTS_PATTERNS but transformed to regex format
 
 module.exports = {
     // common
@@ -54,5 +56,7 @@ module.exports = {
     GET_REQUEST_LOG_MESSAGE_METHOD: 'getRequestLogMessage:\\s?function\\s?\\(',
     GET_RESPONSE_LOG_MESSAGE_METHOD: 'getResponseLogMessage:\\s?function\\s?\\(',
 
-
+    //code_items/clientSide.js
+    HARD_CODED_URL,
+    COMMENTED_HARD_CODED_URL: `${COMMENT_MASK}${HARD_CODED_URL}`
 }

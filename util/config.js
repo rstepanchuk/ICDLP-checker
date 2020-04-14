@@ -3,7 +3,7 @@
 const pkg = require('../package.json');
 
 module.exports = {
-    sourcePath: pkg.configurations.sourceProject.replace('/','\\'),
+    sourcePath: pkg.configurations.sourceProject.replace(/\//g,'\\'),
     platform: pkg.configurations.platformVersion,
     compatibility: pkg.configurations.compatibility,
     version: pkg.configurations.cartridgeVersion,

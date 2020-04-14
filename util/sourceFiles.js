@@ -15,7 +15,7 @@ const getFiles = (namePart, path, options) => {
     let toPick = [];
     if (options) {
         toSkip = options.skip || [];
-        toPick = options.pick ? options.pick.map(name => `\\${name.replace('/','\\')}\\`) : [];
+        toPick = options.pick ? options.pick.map(name => `\\${name.replace(/\//g,'\\')}\\`) : [];
     }
     const dirPath = path ? sourcePath + path : sourcePath;
     return _getFiles(namePart, dirPath, toSkip, toPick)
@@ -38,7 +38,7 @@ const folderIsSkipped = (folderName, skippedArr) => {
             return true;
         }
         if (toSkip.includes('*')) {
-            const regExp = new RegExp(`^${toSkip.replace('*','.*')}$`)
+            const regExp = new RegExp(`^${toSkip.replace(/\*/g,'.*')}$`)
             if (regExp.test(folderName)) {
                 return true;
             }
