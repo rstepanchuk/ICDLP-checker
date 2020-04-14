@@ -49,7 +49,7 @@ module.exports = {
     SERVICE_REGISTRY_MASK: '.*dw[\\/\\.]svc[\\/\\.]ServiceRegistry.*',
     LOCAL_SERVICE_REGISTRY_MASK: '.*dw[\\/\\.]svc[\\/\\.](Local)?ServiceRegistry.*',
     SERVICE_REGISTRY_VARIABLE_MASK: '([A-z]+)\\s?=\\s?.*ServiceRegistry[^.]',
-    SERVICE_CREATED_MASK: `(?:${VAR_PLACEHOLDER}(?:Local)?ServiceRegistry(?:["']\\))?)\\.createService\\('([\\w.]+)'`,
+    SERVICE_CREATED_MASK: `(?:${VAR_PLACEHOLDER}(?:Local)?ServiceRegistry(?:["']\\))?)\\.createService\\('?([\\w.]+)'?\\s?,\\s?\\{`,
     FILTER_LOG_MESSAGE_METHOD: 'filterLogMessage:\\s?function\\s?\\(',
     GET_REQUEST_LOG_MESSAGE_METHOD: 'getRequestLogMessage:\\s?function\\s?\\(',
     GET_RESPONSE_LOG_MESSAGE_METHOD: 'getResponseLogMessage:\\s?function\\s?\\(',

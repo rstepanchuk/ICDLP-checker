@@ -14,19 +14,15 @@ const {
     GET_RESPONSE_LOG_MESSAGE_METHOD
 } = require('../../util/constants');
 
-const collectCreatedServices = (code, regExp) => {
+const collectCreatedServices = (code, regExp) => {    
     const createdServices = [];
     let found;
-    let serviceIdx = 0;
-    while (found = regExp.exec(code)){ // collect information about each service
+    while (found = regExp.exec(code)){ // get name and parameter Object that was passed to service
+        const firstBracePosition = found.index + found[0].length - 1;
         createdServices.push({
             name: found[1],
-            funcStart: found.index
-        })
-        if (serviceIdx > 0) {
-            createdServices[serviceIdx-1].funcEnd = found.index
-        }
-        serviceIdx++;
+            scope: helpers.getScope(code, firstBracePosition)
+        });
     }
     if (createdServices.length === 0) {
         throw new Error('ServiceRegistry was imported, but no created servcies were found')
@@ -80,12 +76,11 @@ describe('Services', function() {
                             getRequestLogMessage: false,
                             getResponseLogMessage: false
                         }
-                        const scope = code.substring(service.funcStart, service.funcEnd);
-                        presentMethods.filterLogMessage = new RegExp(FILTER_LOG_MESSAGE_METHOD, 'm').test(scope);
+                        presentMethods.filterLogMessage = new RegExp(FILTER_LOG_MESSAGE_METHOD, 'm').test(service.scope);
                         
                         if (!presentMethods.filterLogMessage) {
-                            presentMethods.getRequestLogMessage = new RegExp(GET_REQUEST_LOG_MESSAGE_METHOD, 'm').test(scope);
-                            presentMethods.getResponseLogMessage = new RegExp(GET_RESPONSE_LOG_MESSAGE_METHOD, 'm').test(scope);
+                            presentMethods.getRequestLogMessage = new RegExp(GET_REQUEST_LOG_MESSAGE_METHOD, 'm').test(service.scope);
+                            presentMethods.getResponseLogMessage = new RegExp(GET_RESPONSE_LOG_MESSAGE_METHOD, 'm').test(service.scope);
                             if (!presentMethods.getRequestLogMessage || !presentMethods.getResponseLogMessage) {
                                 violations.push({
                                     script,

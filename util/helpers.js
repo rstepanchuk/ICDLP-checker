@@ -18,7 +18,22 @@ const createRegExWithVariables = (varArr, mask, injectSuffix='') => {
     return new RegExp(finalMask, 'gm');
 }
 
+const getScope = (code, firstBracePosition) => {
+    let cursor = firstBracePosition + 1;
+    let bracesCount = 1;
+    while (bracesCount > 0) {
+        if (code[cursor] === '}') {
+            bracesCount--;
+        } else if (code[cursor] === '{') {
+            bracesCount++;
+        }
+        cursor++;
+    }
+    return code.substring(firstBracePosition, cursor);
+}
+
 module.exports = {
     findSearchMatchVariables,
-    createRegExWithVariables
+    createRegExWithVariables,
+    getScope
 }
