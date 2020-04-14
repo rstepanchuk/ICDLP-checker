@@ -7,11 +7,12 @@ const helpers = require('../../util/helpers');
 const {
     SIZE_IN_PX,
     MAXIMUM_ALLOWED_SIZE_IN_PX,
-    IMPORTANT_CSS
+    IMPORTANT_CSS,
+    Z_INDEX_CSS
 } = require('../../util/constants');
 
 
-describe('Client-side JS', function() {
+describe('Client-side SCSS', function() {
 
         it(`em or rems should be used instead of px (checker config allows values ${MAXIMUM_ALLOWED_SIZE_IN_PX} or less) `, function() {
             const violations = [];
@@ -46,4 +47,16 @@ describe('Client-side JS', function() {
             assert.isEmpty(violations, `!important usages were found: ${violations}`);
         });
     
+        it(`z-index should be avoided `, function() {
+            const violations = [];
+            sourceFiles.styles.forEach(file => {
+                const code = sourceFiles.getFileData(file);
+                const zRegExp = new RegExp(Z_INDEX_CSS, 'gm');
+                const found = code.match(zRegExp) || [];
+                if (found.length > 0) {
+                    violations.push(`\nSCRIPT: ${file}\n Z-INDEX USAGE: ${found.map(f => '\n ' + f)}`)
+                }
+            })
+            assert.isEmpty(violations, `z-index usages were found: ${violations}`);
+        });
 });

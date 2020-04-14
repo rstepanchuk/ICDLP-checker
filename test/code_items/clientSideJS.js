@@ -10,6 +10,7 @@ const {
 
 
 describe('Client-side JS', function() {
+    this.timeout(10000)
 
         it('URLs come from the server and hardcoded URLs should be avoided.', function() {
             const hardCodedUrls = [];

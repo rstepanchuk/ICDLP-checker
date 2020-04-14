@@ -63,5 +63,6 @@ module.exports = {
     //code_items/clientSideSCSS.js
     MAXIMUM_ALLOWED_SIZE_IN_PX: 5,
     SIZE_IN_PX: '.*?(\\d{1,5})px',
-    IMPORTANT_CSS: '.*!important.*'
+    IMPORTANT_CSS: '.*!important.*',
+    Z_INDEX_CSS: 'z-index:.*'
 }
