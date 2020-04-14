@@ -42,7 +42,7 @@ describe('General', function() {
 
         const toDoRegExp = new RegExp(TODO_MASK, 'gm');
         const toDos = [];
-        sourceFiles.getFiles('', '/cartridges', ['static']).forEach(file => {
+        sourceFiles.getFiles('', '/cartridges', { skip: ['static'] }).forEach(file => {
             const foundTODO = sourceFiles.getFileData(file).match(toDoRegExp);
             if (foundTODO) {
                 toDos.push(`\nSCRIPT: ${file}\nFOUND: ${foundTODO.map(imp => '\n      '+ imp)}}`);

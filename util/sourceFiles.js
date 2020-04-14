@@ -10,9 +10,15 @@ if (config.ChgCartridgesExcluded) {
     alwaysSkippedFolders.push('*changes')
 }
 
-const getFiles = (namePart, relpath, skippedFolders) => {
-    const dirPath = relpath ? sourcePath + relpath : sourcePath;
-    return _getFiles(namePart, dirPath, skippedFolders)
+const getFiles = (namePart, path, options) => {
+    let toSkip = [];
+    let toPick = [];
+    if (options) {
+        toSkip = options.skip || [];
+        toPick = options.pick ? options.pick.map(name => `\\${name.replace('/','\\')}\\`) : [];
+    }
+    const dirPath = path ? sourcePath + path : sourcePath;
+    return _getFiles(namePart, dirPath, toSkip, toPick)
 }
 
 const endingsDoMatch = (filename, namePart) => {
@@ -41,7 +47,7 @@ const folderIsSkipped = (folderName, skippedArr) => {
     return false;
 }
 
-const _getFiles = (namePart, dirPath, skippedFolders =[]) => {
+const _getFiles = (namePart, dirPath, skippedFolders =[], targetFolders=[]) => {
     const skipped = [...alwaysSkippedFolders];
     skippedFolders.forEach(fold => {
         if (!skipped.some(dir => dir === fold)){
@@ -60,6 +66,9 @@ const _getFiles = (namePart, dirPath, skippedFolders =[]) => {
                 result.push(filePath)
             }
         })
+    if (targetFolders.length > 0) {
+        return result.filter(path => targetFolders.some(folder => path.includes(folder)))
+    }
     return result;
 }
 
@@ -105,7 +114,7 @@ const getCartrides = () => {
 }
 
 
-module.exports.scripts = getFiles('.js|.ds', '/cartridges',['static','client']);
+module.exports.scripts = getFiles('.js|.ds', '/cartridges',{skip: ['static','client']});
 module.exports.json = getJSON();
 module.exports.cartridges = getCartrides();
 module.exports.getFiles = getFiles;
