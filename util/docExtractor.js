@@ -88,11 +88,11 @@ const defineGuideVersion = (docObject) => {
 
     sourceFiles.cartridges;
 
-    if (name.includes('controllers') || name.includes('sgjc')) {
+    if (name.includes('controller') || name.includes('sgjc')) {
         traits.controllers = true;
     }
 
-    if (name.includes('pipelines')) {
+    if (name.includes('pipeline')) {
         traits.pipelines = true;
     }
 
@@ -118,7 +118,7 @@ const defineGuideVersion = (docObject) => {
     }
     
     if (!traits.controllers) {
-        const customControllersCode = new RegExp('customcode\([^\)]controller[^\)]\)', 'gm')
+        const customControllersCode = new RegExp('custom\\scode\\s?\\([^)]*controller[^)]*\\)', 'gm')
         const contents = docObject.getTableOfContents()
         traits.controllers = customControllersCode.test(contents);
     }
@@ -148,10 +148,13 @@ if (sourceDocs.length === 0) {
 
 const docs = Promise.all(sourceDocs.map(file => _readDocFile(file)))
     .then(result => {
-        const spaces = /\s|\t|\n/gm;
+        const spaces = /\s{2,100}|\t{1,100}|\n{1,100}/gm;
+        const brokenNum =/(\d{1,4})\s?\.\s?(\d{1,4})(?:\s?(\.)\s?(\d{1,4}))?/ // sometimes unneccessary spaces appear in xx.xx.xx numbers eg 'version 20 .1.0'
         result.forEach(doc=>{
             doc.name = doc.name.toLowerCase();
-            doc.content = doc.content.toLowerCase().replace(spaces, '');
+            doc.content = doc.content.toLowerCase()
+                .replace(spaces, ' ')
+                .replace(brokenNum, '$1.$2$3$4');
             doc.type = defineDocType(doc)
             if (doc.type === 'guide') {
                 doc.version = defineGuideVersion(doc);

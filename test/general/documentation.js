@@ -14,7 +14,8 @@ const {
     SITEGEN_ANY_VERSION_MASK,
     COMPATIBILITY_SPECIFIC_VERSION_MASK,
     COMPATIBILITY_ANY_VERSION_MASK,
-    MINIMAL_AVAILABILITY_SECTION_LENGTH
+    MINIMAL_AVAILABILITY_SECTION_LENGTH,
+    CARTRIDGE_VERSION
  } = require('../../util/constants');
 
 
@@ -41,7 +42,7 @@ describe('Documentation', function() {
 
         it(`Valid cartridge version number ${config.version} should be on a title page of the guide`, async function() {
             const guides = await docExtractor.getGuides();
-            const version = new RegExp(config.version, 'm')
+            const version = new RegExp(CARTRIDGE_VERSION, 'm')
             guides.forEach(g => {
                 const fp = g.getFirstPage();
                 assert.isTrue(version.test(fp), `Cartridge version ${config.version} wasn't found in guide '${g.name}'\n ${alternativeFound(fp,'(v|v.|version)\\D*(\\d{2}\\.\\d\\.\\d)')}`)

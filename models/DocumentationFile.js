@@ -1,5 +1,6 @@
 
 const CONTENT_BULLET_POINT_MAKS = '([^0-9\\s\\t.]\\D+)\\d'; // at least 2 non-digits followed by digit
+const TABLE_OF_CONTENTS_MAKS = 'table\\sof\\scontents?\\s?';
 
 class DocumenationFile {
     constructor(name){
@@ -15,13 +16,18 @@ class DocumenationFile {
         if (this.contentsStart !== 0) {
             return this.contentsStart;
         }
-        let headerLength = 'tableofcontents'.length
-        let start = this.content.indexOf('tableofcontents');
-        if (start === -1) {
+        const contentsRegEx = new RegExp(TABLE_OF_CONTENTS_MAKS);
+        const found = contentsRegEx.exec(this.content)
+        let start;
+        let headerLength = 0;
+        if (found) {
+            start = found.index
+            headerLength = found[0].length
+        } else {
             start = this.content.indexOf('contents');
             headerLength = 'contents'.length;
-        }
-        if (start === -1) {
+        } 
+        if (!start) {
             throw new Error('No table of contents section found (or table of contents doesn\' have header')
         }
         return isHeaderIncluded ? start : start + headerLength;

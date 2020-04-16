@@ -94,10 +94,12 @@ describe('General', function() {
             const code = sourceFiles.getFileData(file);
             for (let cl in METHODS_WITH_SEEKABLE_ITERATOR) {
                 if (code.includes(cl)){
+                    console.log(`Class ${cl} in script: ${file}`)
                     const seekIteratorRegExp = createRegExWithVariables(METHODS_WITH_SEEKABLE_ITERATOR[cl], SEEKABLE_ITERATOR_VARIABLE_MASK); //searching methods that return seekIterator and extracting variables that are actual iterators
                     const iterators = [];
                     let found;
                     while (found = seekIteratorRegExp.exec(code)){
+                        console.log(found[1])
                         iterators.push(found[1])
                     }
                     if (iterators.length > 0) {

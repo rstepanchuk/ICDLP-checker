@@ -41,6 +41,7 @@ module.exports = {
     CLOSED_VARIABLE_MASK: `(${VAR_PLACEHOLDER})\\.close\\(\\)`,
     SEEKABLE_ITERATOR_VARIABLE_MASK: `([A-z]+)\\s?=\\s?([A-z.]+)\\.(${VAR_PLACEHOLDER})\\(`,
     METHODS_WITH_SEEKABLE_ITERATOR,
+    CARTRIDGE_VERSION: `${config.version}`,
 
     //code_items/fileNames.js
     ROW_MAX_LENGTH: 130,
