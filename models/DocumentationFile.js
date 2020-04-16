@@ -21,6 +21,9 @@ class DocumenationFile {
             start = this.content.indexOf('contents');
             headerLength = 'contents'.length;
         }
+        if (start === -1) {
+            throw new Error('No table of contents section found (or table of contents doesn\' have header')
+        }
         return isHeaderIncluded ? start : start + headerLength;
     }
 

@@ -15,13 +15,13 @@ describe('Metadata', function() {
           assert.isTrue(siteMentionings.every(mentioning => mentioning==='RefArch'), `Job metatadata site-id refers to: ${siteMentionings}\n`);
         });
 
-        it('Job modules should refer to .js not .ds files', function() {
+        it('Job modules should not refer to .ds files', function() {
             var modulePaths = [];
             const jobPath = new RegExp(/<parameter name="ExecuteScriptModule.Module">((\w|\/|\.)*)<\/parameter>/gm)
             while (result = jobPath.exec(jobData)) {
                 modulePaths.push(result[1])
             }
-          assert.isTrue(modulePaths.every(path => path.endsWith('.js')), `\n Some module paths in job.xml refer not to .js files. Current paths: ${modulePaths.map(p => '\n' + p)}\n`);
+          assert.isTrue(modulePaths.every(path => !path.endsWith('.ds')), `\n Some module paths in job.xml refer to .ds files. Current paths: ${modulePaths.map(p => '\n' + p)}\n`);
         });
     });
     
