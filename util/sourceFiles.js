@@ -5,7 +5,7 @@ const path = require('path');
 const config = require('./config');
 
 const sourcePath = config.sourcePath;
-const alwaysSkippedFolders = ['node_modules'];
+const alwaysSkippedFolders = ['node_modules', 'app_storefront_core', 'app_storefront_controllers'];
 if (config.ChgCartridgesExcluded) {
     alwaysSkippedFolders.push('*changes')
 }
@@ -85,20 +85,24 @@ const sortCartridgesByVersions = (cartrideArr) => {
     const sfraSubstr = ['sfra']
     const controllersSubstr = ['controllers', 'sg_changes', '_sg']
     const pipelinesSubstr = ['pipelines']
+    const developmentSubstr = ['app_storefront'];
 
     const result = {
         sfra: [],
         controllers: [],
         pipelines: [],
-        common: []
+        common: [],
+        development: []
     }
     cartrideArr.forEach(cartridge=>{
         const name = cartridge.toLowerCase();
-        if(sfraSubstr.some(substr=>name.includes(substr))) {
+        if (developmentSubstr.some(substr => name.includes(substr))) {
+            result.development.push(name)
+        } else if(sfraSubstr.some(substr => name.includes(substr))) {
             result.sfra.push(name)
-        } else if(controllersSubstr.some(substr=>name.includes(substr))) {
+        } else if(controllersSubstr.some(substr => name.includes(substr))) {
             result.controllers.push(name)
-        } else if(pipelinesSubstr.some(substr=>name.includes(substr))) {
+        } else if(pipelinesSubstr.some(substr => name.includes(substr))) {
             result.pipelines.push(name)
         } else {
             result.common.push(name);
@@ -112,7 +116,6 @@ const getCartrides = () => {
     const cartridges = fs.readdirSync(sourcePath + '/cartridges');
     return sortCartridgesByVersions(cartridges);
 }
-
 
 module.exports.scripts = getFiles('.js|.ds', '/cartridges',{skip: ['static','client']});
 module.exports.styles = getFiles('.css|.scss', '/cartridges', { pick: ['css', 'scss'] });

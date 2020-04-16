@@ -104,8 +104,23 @@ const defineGuideVersion = (docObject) => {
         traits.sfra = sourceFiles.cartridges.sfra.every(c=>text.includes(c));
     }
 
+    if (!traits.sfra) {
+        traits.sfra = docObject.getFirstPage().includes('sfra')
+    }
+
     if (!traits.controllers) {
-        traits.controllers = sourceFiles.cartridges.controllers.length > 0 && sourceFiles.cartridges.controllers.every(c=>text.includes(c));
+        traits.controllers = sourceFiles.cartridges.controllers.length > 0 && 
+            sourceFiles.cartridges.controllers.every(c=>text.includes(c));
+    }
+
+    if (!traits.controllers) {
+        traits.controllers = docObject.getFirstPage().includes('controller')
+    }
+    
+    if (!traits.controllers) {
+        const customControllersCode = new RegExp('customcode\([^\)]controller[^\)]\)', 'gm')
+        const contents = docObject.getTableOfContents()
+        traits.controllers = customControllersCode.test(contents);
     }
 
     if (!traits.pipelines) {
