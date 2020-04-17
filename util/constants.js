@@ -12,14 +12,23 @@ const METHODS_WITH_SEEKABLE_ITERATOR = { // Methods that can return seekable ite
 };
 
 // UTILITY CONSTANTS THAT ARE USED FOR GENERATING EXPORT**********************************************
-const VAR_PLACEHOLDER = '<%vars>';
+const PLACEHOLDER = '<%vars>';
+const METHOD_PLACEHOLDER = '<%meth>'
 const COMMENT_MASK = `(^\\s*\\*.*|.*//.*|/\\*\\*?)`;
 const HARD_CODED_URL = '.*https?://.*';
 const ALLOWED_IMPORTS_REGEXP_ADAPTED = ALLOWED_IMPORTS_PATTERNS.map(pattern => pattern.replace(/\.|\*|\//g, '\\$&'));// same as ALLOWED_IMPORTS_PATTERNS but transformed to regex format
 
 module.exports = {
     // common
-    VAR_PLACEHOLDER,
+    TABLE_OF_CONTENTS_MAKS: 'table\\sof\\scontents?\\s?',
+    PLACEHOLDER,
+    METHOD_PLACEHOLDER,
+    FUNCTION_MASK: 'function\\s?(\\w+)\\s?\\(',
+    METHOD_CALLED_MASK: `(${PLACEHOLDER})\\.(${METHOD_PLACEHOLDER})`,
+    METHOD_CALL_SAVED_TO_VAR_MASK: `(\\w+)\\s?=\\s?.*(${PLACEHOLDER})\\.(${METHOD_PLACEHOLDER})`,
+    DW_IMPORTED_CLASS_VARIABLE: `(\\w+)\\s?=\\s?.*${PLACEHOLDER}(?!\\.|'\\)\\.)`,
+    DW_IMPORTED_CLASS_DIRECT: `(${PLACEHOLDER}(?:["']\\))?)\\.`, // TO USE ONLY IN HELPERS TO FIND METHODS CALLS AS AN ADDITION TO VARIABLES ARRAY!
+                                                                // used to search cases when methods called from class directy e.g. dw.order.OrderMgr.createOrder or require('dw/order/OrderMgr').createOrder
 
     //general/documenation.js
     SFRA_SPECIFIC_VERSTION_MASK: `sfra\\D*${config.sfra}`,
@@ -36,10 +45,9 @@ module.exports = {
     INVALID_REQUIRE_MASK: `require\\(('|")(?!${ALLOWED_IMPORTS_REGEXP_ADAPTED.join('|')})[^)]+?\\)`,
     TODO_MASK: 'TODO.*',
     SESSION_VARIABLE_MASK: '([A-z]+)\\s?=\\s?request\\.getSession\\(\\)[^.]', // for cases if session was saved as variable with another name
-    SESSION_CUSTOM_MASK: `^.*?(${VAR_PLACEHOLDER}session|request.getSession\\(\\))\\.(custom\\W|getCustom\\(\\)).*?$`,
+    SESSION_CUSTOM_MASK: `^.*?(${PLACEHOLDER}session|request.getSession\\(\\))\\.(custom\\W|getCustom\\(\\)).*?$`,
     READER_WRITER_VARIABLE_MASK: '([A-z]+)(\\s:\\s[A-z]+)?\\s?=\\s?new\\s([A-z.]+)?(Reader|Writer)\\(',
-    CLOSED_VARIABLE_MASK: `(${VAR_PLACEHOLDER})\\.close\\(\\)`,
-    SEEKABLE_ITERATOR_VARIABLE_MASK: `([A-z]+)\\s?=\\s?([A-z.]+)\\.(${VAR_PLACEHOLDER})\\(`,
+    CLOSED_VARIABLE_MASK: `(${PLACEHOLDER})\\.close\\(\\)`,
     METHODS_WITH_SEEKABLE_ITERATOR,
     CARTRIDGE_VERSION: `${config.version}`,
 
@@ -51,11 +59,11 @@ module.exports = {
     //code_items/services.js
     SERVICE_REGISTRY_MASK: '.*dw[\\/\\.]svc[\\/\\.]ServiceRegistry.*',
     LOCAL_SERVICE_REGISTRY_MASK: '.*dw[\\/\\.]svc[\\/\\.](Local)?ServiceRegistry.*',
-    SERVICE_REGISTRY_VARIABLE_MASK: '([A-z]+)\\s?=\\s?.*ServiceRegistry[^.]',
-    SERVICE_CREATED_MASK: `(?:${VAR_PLACEHOLDER}(?:Local)?ServiceRegistry(?:["']\\))?)\\.createService\\('?([\\w.]+)'?\\s?,\\s?\\{`,
+    SERVICE_CREATED_MASK: `(?:${PLACEHOLDER}(?:Local)?ServiceRegistry(?:["']\\))?)\\.createService\\('?([\\w.]+)'?\\s?,\\s?\\{`,
     FILTER_LOG_MESSAGE_METHOD: 'filterLogMessage:\\s?function\\s?\\(',
     GET_REQUEST_LOG_MESSAGE_METHOD: 'getRequestLogMessage:\\s?function\\s?\\(',
     GET_RESPONSE_LOG_MESSAGE_METHOD: 'getResponseLogMessage:\\s?function\\s?\\(',
+
 
     //code_items/clientSideJS.js
     HARD_CODED_URL,

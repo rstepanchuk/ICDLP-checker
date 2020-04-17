@@ -2,6 +2,7 @@
 
 const StreamZip = require('node-stream-zip');
 const DocumentationFile = require('../models/DocumentationFile');
+const { TABLE_OF_CONTENTS_MAKS } = require('./constants');
 
 const sourceFiles = require('./sourceFiles');
 
@@ -60,8 +61,9 @@ const getGuides = (docArray, version) => {
 const defineDocType = (docObject) => {
     const name = docObject.name;
     const text = docObject.content;
-    if ( name.includes('guide') ||
-        ((text.includes('tableofcontent') || text.includes('contents')) && text.includes('implementationguide'))) {
+    const tableOfContRegEx = new RegExp(TABLE_OF_CONTENTS_MAKS, 'm')
+    if (name.includes('guide') ||
+        ((tableOfContRegEx.test(text) || text.includes('contents')) && text.includes('implementation guide'))) {
         return 'guide'
     }
 
@@ -69,7 +71,7 @@ const defineDocType = (docObject) => {
         return 'test cases'
     }
 
-    if (name.includes('overview') || 
+    if (name.includes('overview') || name.includes('validation') ||
     (text.includes('validation') && text.indexOf('validation') < 10)) { // most of cartridges overview start with "Validation"
         return 'overview'
     }
@@ -138,7 +140,7 @@ const defineGuideVersion = (docObject) => {
     if (traits.pipelines) {
         return 'pipelines'
     }
-    // throw new Error(`Unable to define cartridge version for ${name}` );
+    throw new Error(`Unable to define cartridge version for ${name}` );
 }
 
 const sourceDocs = sourceFiles.getFiles('.docx', '/documentation');
@@ -162,7 +164,6 @@ const docs = Promise.all(sourceDocs.map(file => _readDocFile(file)))
         });
         return result;
     });
-
 
 module.exports.getDocs = () => docs;
 module.exports.getGuides = async (version) => getGuides(await docs, version);

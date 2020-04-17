@@ -1,6 +1,6 @@
 
 const CONTENT_BULLET_POINT_MAKS = '([^0-9\\s\\t.]\\D+)\\d'; // at least 2 non-digits followed by digit
-const TABLE_OF_CONTENTS_MAKS = 'table\\sof\\scontents?\\s?';
+const { TABLE_OF_CONTENTS_MAKS } = require('../util/constants');
 
 class DocumenationFile {
     constructor(name){

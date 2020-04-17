@@ -3,11 +3,9 @@
 const assert = require('chai').assert;
 const sourceFiles = require('../../util/sourceFiles');
 const helpers = require('../../util/helpers');
-// const CLIENT_CREATING_MASK = 'new\\s([A-z.]+\\.)?(HTTPClient|FTPClient|SFTPClient)\\('
 const {
     SERVICE_REGISTRY_MASK,
     LOCAL_SERVICE_REGISTRY_MASK,
-    SERVICE_REGISTRY_VARIABLE_MASK,
     SERVICE_CREATED_MASK,
     FILTER_LOG_MESSAGE_METHOD,
     GET_REQUEST_LOG_MESSAGE_METHOD,
@@ -67,7 +65,7 @@ describe('Services', function() {
             sourceFiles.scripts.forEach(script => {
                 const code = sourceFiles.getFileData(script);
                 if (serviceRegistryRegExp.test(code)) { // if ServiceRegistry is mentioned on page
-                    const servRegistryVars = helpers.findSearchMatchVariables(code, SERVICE_REGISTRY_VARIABLE_MASK); // check if ServiceRegistry was saved under differently named variable
+                    const servRegistryVars = helpers.findDwClassUsages(code, 'ServiceRegistry')
                     const createdServiceRegExp = helpers.createRegExWithVariables(servRegistryVars, SERVICE_CREATED_MASK, '|' );
                     const createdServices = collectCreatedServices(code, createdServiceRegExp); // get all created service to investigate neccessary method presence
                     createdServices.forEach(service => {

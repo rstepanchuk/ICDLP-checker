@@ -10,11 +10,11 @@
   "license": "ISC",
   "configurations": {
     "sourceProject": "../riskified",
-    "platformVersion": "20.1",
+    "platformVersion": "20.3",
     "compatibility": "19.10",
     "cartridgeVersion": "20.1.0",
     "sfraVersion": "4.4.1",
-    "genesisVersion": "104.1.4",
+    "genesisVersion": "105.0.0",
     "excludeChangesCartridges": false
   },
   "spreadSheet": "1LFCqtO1v0KMW7EbE7oD8_EfPAdXeevcmOxQVYFEHLBw",

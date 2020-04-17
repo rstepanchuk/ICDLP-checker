@@ -11,12 +11,17 @@ const {
     READER_WRITER_VARIABLE_MASK,
     CLOSED_VARIABLE_MASK,
     METHODS_WITH_SEEKABLE_ITERATOR,
-    SEEKABLE_ITERATOR_VARIABLE_MASK
+    METHOD_CALLED_MASK,
+    METHOD_CALL_SAVED_TO_VAR_MASK,
 } = require('../../util/constants');
 
 const { 
     createRegExWithVariables,
-    findSearchMatchVariables
+    findSearchMatchVariables,
+    findDwClassUsages,
+    createRegExWithMethodCalls,
+    findAllfunctions,
+    mapSearchResultToFunc
 } = require('../../util/helpers');
 
 const getUnclosedErrorMessage = (notClosedArr) => {
@@ -88,34 +93,32 @@ describe('General', function() {
     });
 
     it('All SeekableIterators should be explicitly closed', function() {
-
-        const notClosed = [];
+        const violations = [];
         sourceFiles.scripts.forEach(file =>{
             const code = sourceFiles.getFileData(file);
             for (let cl in METHODS_WITH_SEEKABLE_ITERATOR) {
-                if (code.includes(cl)){
-                    console.log(`Class ${cl} in script: ${file}`)
-                    const seekIteratorRegExp = createRegExWithVariables(METHODS_WITH_SEEKABLE_ITERATOR[cl], SEEKABLE_ITERATOR_VARIABLE_MASK); //searching methods that return seekIterator and extracting variables that are actual iterators
-                    const iterators = [];
-                    let found;
-                    while (found = seekIteratorRegExp.exec(code)){
-                        console.log(found[1])
-                        iterators.push(found[1])
-                    }
-                    if (iterators.length > 0) {
-                        const closedIteratorRegExp = createRegExWithVariables(iterators, CLOSED_VARIABLE_MASK);
-                        const closed = code.match(closedIteratorRegExp) || [];
-                        if (iterators.length !== closed.length) {
-                            notClosed.push({
-                                script: file,
-                                open: iterators,
-                                closed
-                            })
+                const classVariables = findDwClassUsages(code, cl);
+                if (classVariables.length > 0) {
+                    const seekIterRegExp = createRegExWithMethodCalls(classVariables, METHODS_WITH_SEEKABLE_ITERATOR[cl], METHOD_CALL_SAVED_TO_VAR_MASK)
+                    let found = seekIterRegExp.exec(code);
+                    const functionsInCode = found ? findAllfunctions(code) : [];
+                    const notClosed = [];
+                    while (found){
+                        const originFunction = mapSearchResultToFunc(found, functionsInCode);
+                        const closedIteratorRegExp = createRegExWithVariables(found[1], CLOSED_VARIABLE_MASK);
+                        const closed = closedIteratorRegExp.test(originFunction.scope)
+                        if (!closed) {
+                            notClosed.push(`\n ${found[0]}`)
                         }
+                        found = seekIterRegExp.exec(code);
+
+                    }
+                    if (notClosed.length > 0) {
+                        violations.push(`\nSCRIPT: ${file}, \nNOT CLOSED: ${notClosed}`)
                     }
                 }
             }
         });
-        assert.isEmpty(notClosed, `Not all seekable iterators were closed: \n${getUnclosedErrorMessage(notClosed)}`);
+        assert.isEmpty(violations, `Not all seekable iterators were closed: ${violations}`);
     });
 })
