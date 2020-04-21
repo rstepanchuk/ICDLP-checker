@@ -10,6 +10,11 @@ if (config.ChgCartridgesExcluded) {
     alwaysSkippedFolders.push('*changes')
 }
 
+const getCartrides = () => {
+    const cartridges = fs.readdirSync(sourcePath + '\\cartridges');
+    return sortCartridgesByVersions(cartridges);
+}
+
 const getFiles = (namePart, path, options) => {
     let toSkip = [];
     let toPick = [];
@@ -20,6 +25,22 @@ const getFiles = (namePart, path, options) => {
     const dirPath = path ? sourcePath + path : sourcePath;
     return _getFiles(namePart, dirPath, toSkip, toPick)
 }
+
+const getSpecificVersionFiles = (namePart, version, options) => {
+    const versions = [].concat(version); // in order to be able to accept both single value or array of versions
+    const cartridges = getCartrides();
+    const targetCartridges = versions.reduce((result, v) => {
+        if (!cartridges[v]) {
+            throw new Error (`No cartridge version ${v} found`);
+        }
+        return result.concat(cartridges[v]);
+    }, []);
+    return targetCartridges.reduce((files, vers) => {
+        const path = `\\cartridges\\${vers}`
+        return files.concat(getFiles(namePart, path, options));
+    }, [])
+}
+
 
 const endingsDoMatch = (filename, namePart) => {
     if (!namePart) {
@@ -112,16 +133,15 @@ const sortCartridgesByVersions = (cartrideArr) => {
     return result;
 }
 
-const getCartrides = () => {
-    const cartridges = fs.readdirSync(sourcePath + '/cartridges');
-    return sortCartridgesByVersions(cartridges);
-}
+const getFileName = path => path.replace(/^.*[\\\/]/, '');
 
-module.exports.scripts = getFiles('.js|.ds', '/cartridges',{skip: ['static','client']});
+
+module.exports.scripts = getFiles('.js|.ds', '/cartridges',{ skip: ['static','client'] });
 module.exports.styles = getFiles('.css|.scss', '/cartridges', { pick: ['css', 'scss'] });
 module.exports.clientScripts = getFiles('.js', '/cartridges', { pick: ['client/default/js', 'js/pages', 'static'] });
 module.exports.json = getJSON();
 module.exports.cartridges = getCartrides();
 module.exports.getFiles = getFiles;
+module.exports.getSpecificVersionFiles = getSpecificVersionFiles;
 module.exports.getFileData = getFileData;
-
+module.exports.getFileName = getFileName;

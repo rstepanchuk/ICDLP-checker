@@ -5,7 +5,8 @@ const {
     DW_IMPORTED_CLASS_VARIABLE,
     DW_IMPORTED_CLASS_DIRECT,
     METHOD_PLACEHOLDER,
-    FUNCTION_MASK
+    FUNCTION_MASK,
+    SFRA_CONTROLLER_MASK
  } = require('./constants');
 
 /**
@@ -13,7 +14,7 @@ const {
  * Used for cases when search result are used in new reqExp expressions
  * @param {string} str 
  */
- const escapeLetters = (str) => {
+ const escapeLetters = str => {
     const escaped = ['.',')','(','\\','*','?']
     return str
         .split('')
@@ -156,16 +157,52 @@ const collectFunctionData = (code, regexResult) => {
 }
 
 /**
+ * Taking regexResult of controller, collects name, and function scope statistic 
+ * @param {strig} code 
+ * @param {regex.exec() result} regexResult 
+ */
+const collectEndpointData = (code, regexResult) => {
+    let scopeStartIndex = regexResult.index + regexResult[0].length;
+    while (code[scopeStartIndex] !== '{') {
+        scopeStartIndex++;
+    }
+    const scope = getScope(code, scopeStartIndex);
+    const result = {
+        name: regexResult[1],
+        scope,
+        scopeStart: scopeStartIndex,
+        scopeEnd: scopeStartIndex + scope.length
+    }
+    return result;
+}
+
+
+/**
  * Looks for all functions in code and collects their name, parameters, scope and some other statistic
  * @param {strig} code 
  * @returns {Array} array of function objects
  */
-const findAllfunctions = (code) => {
+const findAllfunctions = code => {
     const result = [];
     const funcRegEx = new RegExp(FUNCTION_MASK, 'gm');
     let found;
     while (found = funcRegEx.exec(code)) {
         result.push(collectFunctionData(code, found))
+    }
+    return result;
+}
+
+/**
+ * Looks for all controllers end-points in code and collects their data
+ * @param {strig} code 
+ * @returns {Array} array of controllers objects
+ */
+const findAllEndpoints = code => {
+    const result = [];
+    const funcRegEx = new RegExp(SFRA_CONTROLLER_MASK, 'gm');
+    let found;
+    while (found = funcRegEx.exec(code)) {
+        result.push(collectEndpointData(code, found))
     }
     return result;
 }
@@ -200,6 +237,7 @@ module.exports = {
     createRegExWithVariables,
     createRegExWithMethodCalls,
     findAllfunctions,
+    findAllEndpoints,
     mapSearchResultToFunc,
     getScope,
     findDwClassUsages

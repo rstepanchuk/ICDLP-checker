@@ -29,6 +29,7 @@ module.exports = {
     DW_IMPORTED_CLASS_VARIABLE: `(\\w+)\\s?=\\s?.*${PLACEHOLDER}(?!\\.|'\\)\\.)`,
     DW_IMPORTED_CLASS_DIRECT: `(${PLACEHOLDER}(?:["']\\))?)\\.`, // TO USE ONLY IN HELPERS TO FIND METHODS CALLS AS AN ADDITION TO VARIABLES ARRAY!
                                                                 // used to search cases when methods called from class directy e.g. dw.order.OrderMgr.createOrder or require('dw/order/OrderMgr').createOrder
+    SFRA_CONTROLLER_MASK: 'server\\.(?:get|post|use|repend|append|replace|extend)\\([^\\w]*(?:\'|")(\\w+)',
 
     //general/documenation.js
     SFRA_SPECIFIC_VERSTION_MASK: `sfra\\D*${config.sfra}`,
@@ -73,5 +74,8 @@ module.exports = {
     MAXIMUM_ALLOWED_SIZE_IN_PX: 5,
     SIZE_IN_PX: '.*?(\\d{1,5})px',
     IMPORTANT_CSS: '.*!important.*',
-    Z_INDEX_CSS: 'z-index:.*'
+    Z_INDEX_CSS: 'z-index:.*',
+
+    //code_items/controllers.js
+    TEST_METHOD_MASK: '\\bit\\s?\\([^\\w]*(?:\'|")'
 }
