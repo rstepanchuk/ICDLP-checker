@@ -26,7 +26,7 @@ module.exports = {
     FUNCTION_MASK: 'function\\s?(\\w+)\\s?\\(',
     METHOD_CALLED_MASK: `(${PLACEHOLDER})\\.(${METHOD_PLACEHOLDER})`,
     METHOD_CALL_SAVED_TO_VAR_MASK: `(\\w+)\\s?=\\s?.*(${PLACEHOLDER})\\.(${METHOD_PLACEHOLDER})`,
-    DW_IMPORTED_CLASS_VARIABLE: `(\\w+)\\s?=\\s?.*${PLACEHOLDER}(?!\\.|'\\)\\.)`,
+    DW_IMPORTED_CLASS_VARIABLE: `(\\w+)\\s?=\\s?.*${PLACEHOLDER}(?!\\.|['"]\\)\\.)`,
     DW_IMPORTED_CLASS_DIRECT: `(${PLACEHOLDER}(?:["']\\))?)\\.`, // TO USE ONLY IN HELPERS TO FIND METHODS CALLS AS AN ADDITION TO VARIABLES ARRAY!
                                                                 // used to search cases when methods called from class directy e.g. dw.order.OrderMgr.createOrder or require('dw/order/OrderMgr').createOrder
     SFRA_CONTROLLER_MASK: 'server\\.(?:get|post|use|repend|append|replace|extend)\\([^\\w]*(?:\'|")(\\w+)',
@@ -60,7 +60,7 @@ module.exports = {
     //code_items/services.js
     SERVICE_REGISTRY_MASK: '.*dw[\\/\\.]svc[\\/\\.]ServiceRegistry.*',
     LOCAL_SERVICE_REGISTRY_MASK: '.*dw[\\/\\.]svc[\\/\\.](Local)?ServiceRegistry.*',
-    SERVICE_CREATED_MASK: `(?:${PLACEHOLDER}(?:Local)?ServiceRegistry(?:["']\\))?)\\.createService\\('?([\\w.]+)'?\\s?,\\s?\\{`,
+    SERVICE_CREATED_MASK: `(?:${PLACEHOLDER}(?:Local)?ServiceRegistry(?:["']\\))?)\\.createService\\(['"]?([\\w.]+)['"]?\\s?,\\s?\\{`,
     FILTER_LOG_MESSAGE_METHOD: 'filterLogMessage:\\s?function\\s?\\(',
     GET_REQUEST_LOG_MESSAGE_METHOD: 'getRequestLogMessage:\\s?function\\s?\\(',
     GET_RESPONSE_LOG_MESSAGE_METHOD: 'getResponseLogMessage:\\s?function\\s?\\(',

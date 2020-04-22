@@ -23,7 +23,7 @@ const collectCreatedServices = (code, regExp) => {
         });
     }
     if (createdServices.length === 0) {
-        throw new Error('ServiceRegistry was imported, but no created servcies were found')
+        throw new Error('ServiceRegistry was imported, but no created services were found')
     }
     return createdServices;
 }
