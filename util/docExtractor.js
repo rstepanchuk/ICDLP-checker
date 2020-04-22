@@ -129,6 +129,11 @@ const defineGuideVersion = (docObject) => {
         traits.pipelines = sourceFiles.cartridges.pipelines.length > 0 && sourceFiles.cartridges.pipelines.every(c=>text.includes(c))
     }
 
+    if (!traits.sfra && !traits.controllers && !traits.pipelines) {
+        traits.pipelines = docObject.getFirstPage().includes('pipeline')
+        console.log(`FIRST PAGE: ${docObject.getFirstPage()} `)
+    }
+
     if (traits.sfra) {
         return traits.controllers ? 'mixed' : 'sfra'
     }

@@ -9,7 +9,7 @@
   "author": "Rostyslav Stepanchuk",
   "license": "ISC",
   "configurations": {
-    "sourceProject": "../riskified",
+    "sourceProject": "../bread",
     "platformVersion": "20.3",
     "compatibility": "19.10",
     "cartridgeVersion": "20.1.0",

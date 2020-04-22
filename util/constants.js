@@ -77,5 +77,7 @@ module.exports = {
     Z_INDEX_CSS: 'z-index:.*',
 
     //code_items/controllers.js
-    TEST_METHOD_MASK: '\\bit\\s?\\([^\\w]*(?:\'|")'
+    TEST_METHOD_MASK: '\\bit\\s?\\([^\\w]*(?:\'|")',
+    SFRA_REPLACED_CONTROLLER_MASK: 'server\\.replace\\([^\\w]*(?:\'|")(\\w+)',
+
 }

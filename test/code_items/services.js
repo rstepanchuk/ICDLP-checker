@@ -39,13 +39,13 @@ const getMessageLogErrorMessage = (violation) => {
 }
 describe('Services', function() {
 
-        it('All FTPClient, SFTPClient, Webreference, Webdav, and HTTPClient calls should be called via the Service Framework.', function() {
-            assert.isTrue(true);
-        });
+        // it('All FTPClient, SFTPClient, Webreference, Webdav, and HTTPClient calls should be called via the Service Framework.', function() {
+        //     assert.isTrue(true);
+        // });
 
-        it('All Webreference calls should be called via the Service Framework.', function() {
-            assert.isTrue(true);
-        });
+        // it('All Webreference calls should be called via the Service Framework.', function() {
+        //     assert.isTrue(true);
+        // });
 
         it('LocalServiceRegistry should be used instead of ServiceRegistry', function() {
             const serviceRegistries = [];
