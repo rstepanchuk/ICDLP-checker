@@ -131,7 +131,6 @@ const defineGuideVersion = (docObject) => {
 
     if (!traits.sfra && !traits.controllers && !traits.pipelines) {
         traits.pipelines = docObject.getFirstPage().includes('pipeline')
-        console.log(`FIRST PAGE: ${docObject.getFirstPage()} `)
     }
 
     if (traits.sfra) {
@@ -171,4 +170,4 @@ const docs = Promise.all(sourceDocs.map(file => _readDocFile(file)))
     });
 
 module.exports.getDocs = () => docs;
-module.exports.getGuides = async (version) => getGuides(await docs, version);
+module.exports.getGuides = async (version) => getGuides(await docs, version).filter(doc => doc.version != 'pipelines');

@@ -34,10 +34,11 @@ describe('General', function() {
         
         const invalidImports = [];
         const invalidRequireRegExp = new RegExp(INVALID_REQUIRE_MASK, 'gm');
-        sourceFiles.scripts.forEach(script => {
-            const foundInvalid = sourceFiles.getFileData(script).match(invalidRequireRegExp);
+        const targetFiles = [].concat(sourceFiles.scripts, sourceFiles.templates);
+        targetFiles.forEach(file => {
+            const foundInvalid = sourceFiles.getFileData(file).match(invalidRequireRegExp);
             if (foundInvalid) {
-                invalidImports.push(`\nSCRIPT: ${script}\nINVALID_IMPORTS: ${foundInvalid.map(imp => '\n      '+ imp)}}`);
+                invalidImports.push(`\nSCRIPT: ${file}\nINVALID_IMPORTS: ${foundInvalid.map(imp => '\n      '+ imp)}}`);
             }
         })
         assert.isEmpty(invalidImports, `Invalid imports found: ${invalidImports}`)
