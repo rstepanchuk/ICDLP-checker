@@ -79,5 +79,6 @@ module.exports = {
     //code_items/controllers.js
     TEST_METHOD_MASK: '\\bit\\s?\\([^\\w]*(?:\'|")',
     SFRA_REPLACED_CONTROLLER_MASK: 'server\\.replace\\([^\\w]*(?:\'|")(\\w+)',
+    SG_CALLED_CONTROLLER: 'app\\.getController\\([\'"](\\w+)[\'"]\\)'
 
 }

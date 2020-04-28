@@ -1,7 +1,11 @@
 const assert = require('chai').assert;
 const sourceFiles = require('../../util/sourceFiles');
 const helpers = require('../../util/helpers');
-const { TEST_METHOD_MASK, SFRA_REPLACED_CONTROLLER_MASK } = require('../../util/constants')
+const { 
+    TEST_METHOD_MASK,
+    SFRA_REPLACED_CONTROLLER_MASK,
+    SG_CALLED_CONTROLLER 
+} = require('../../util/constants')
 
 const getRelevantIntegrationTest = (tests, fileName) => {
         for (const test of tests) {
@@ -47,7 +51,6 @@ describe('Controllers', function() {
         const violations = [];
         const controllers = sourceFiles.getSpecificVersionFiles('.js|.ds', 'sfra', { pick: ['controllers'] });
         controllers.forEach(file => {
-            // const fileName = sourceFiles.getFileName(file)
             const code = sourceFiles.getFileData(file);
             const replacedRegEx = new RegExp(SFRA_REPLACED_CONTROLLER_MASK, 'gm');
             const replacedEndpoints = [];
@@ -57,6 +60,24 @@ describe('Controllers', function() {
             }
             if (replacedEndpoints.length > 0) {
                 violations.push(`\nSCRIPT: ${file}\n Endpoints that replace original controllers: ${replacedEndpoints}`)
+            }
+        })
+        assert.isEmpty(violations, `Some endpoints replace controllers: ${violations}\n`);
+    });
+
+    it('Controllers should not call other controllers (sg version only)', function() {
+        const violations = [];
+        const controllers = sourceFiles.getSpecificVersionFiles('.js|.ds', 'controllers', { pick: ['controllers'] });
+        controllers.forEach(file => {
+            const code = sourceFiles.getFileData(file);
+            const calledControllerRegEx = new RegExp(SG_CALLED_CONTROLLER, 'gm');
+            const calledControllers = [];
+            let found;
+            while (found = calledControllerRegEx.exec(code)) {
+                calledControllers.push(`\n${found[0]}`);
+            }
+            if (calledControllers.length > 0) {
+                violations.push(`\nSCRIPT: ${file}\n Some controllers call other controllers controllers: ${calledControllers}`)
             }
         })
         assert.isEmpty(violations, `Some endpoints replace controllers: ${violations}\n`);

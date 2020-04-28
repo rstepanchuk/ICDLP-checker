@@ -136,7 +136,7 @@ const sortCartridgesByVersions = (cartrideArr) => {
 const getFileName = path => path.replace(/^.*[\\\/]/, '');
 
 
-module.exports.scripts = getFiles('.js|.ds', '/cartridges',{ skip: ['static','client'] });
+module.exports.scripts = getFiles('.js|.ds', '/cartridges', { skip: ['static','client'] });
 module.exports.styles = getFiles('.css|.scss', '/cartridges', { pick: ['css', 'scss'] });
 module.exports.templates = getFiles('.isml', '/cartridges');
 module.exports.clientScripts = getFiles('.js', '/cartridges', { pick: ['client/default/js', 'js/pages', 'static'] });
