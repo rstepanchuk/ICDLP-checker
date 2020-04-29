@@ -17,19 +17,21 @@ const METHOD_PLACEHOLDER = '<%meth>'
 const COMMENT_MASK = `(^\\s*\\*.*|.*//.*|/\\*\\*?)`;
 const HARD_CODED_URL = '.*https?://.*';
 const ALLOWED_IMPORTS_REGEXP_ADAPTED = ALLOWED_IMPORTS_PATTERNS.map(pattern => pattern.replace(/\.|\*|\//g, '\\$&'));// same as ALLOWED_IMPORTS_PATTERNS but transformed to regex format
+const FUNCTION_MASK = 'function\\s?(\\w+)\\s?\\(';
 
 module.exports = {
     // common
     TABLE_OF_CONTENTS_MAKS: 'table\\sof\\scontents?\\s?',
     PLACEHOLDER,
     METHOD_PLACEHOLDER,
-    FUNCTION_MASK: 'function\\s?(\\w+)\\s?\\(',
+    FUNCTION_MASK,
     METHOD_CALLED_MASK: `(${PLACEHOLDER})\\.(${METHOD_PLACEHOLDER})`,
     METHOD_CALL_SAVED_TO_VAR_MASK: `(\\w+)\\s?=\\s?.*(${PLACEHOLDER})\\.(${METHOD_PLACEHOLDER})`,
     DW_IMPORTED_CLASS_VARIABLE: `(\\w+)\\s?=\\s?.*${PLACEHOLDER}(?!\\.|['"]\\)\\.)`,
     DW_IMPORTED_CLASS_DIRECT: `(${PLACEHOLDER}(?:["']\\))?)\\.`, // TO USE ONLY IN HELPERS TO FIND METHODS CALLS AS AN ADDITION TO VARIABLES ARRAY!
                                                                 // used to search cases when methods called from class directy e.g. dw.order.OrderMgr.createOrder or require('dw/order/OrderMgr').createOrder
     SFRA_CONTROLLER_MASK: 'server\\.(?:get|post|use|repend|append|replace|extend)\\([^\\w]*(?:\'|")(\\w+)',
+    FUNCTION_WITH_DESCRIPTION_MASK: `\\/\\*\\*(?:\\s|.)+?\\*\\/\\s+${FUNCTION_MASK}`,
 
     //general/documenation.js
     SFRA_SPECIFIC_VERSTION_MASK: `sfra\\D*${config.sfra}`,
@@ -79,6 +81,8 @@ module.exports = {
     //code_items/controllers.js
     TEST_METHOD_MASK: '\\bit\\s?\\([^\\w]*(?:\'|")',
     SFRA_REPLACED_CONTROLLER_MASK: 'server\\.replace\\([^\\w]*(?:\'|")(\\w+)',
-    SG_CALLED_CONTROLLER: 'app\\.getController\\([\'"](\\w+)[\'"]\\)'
+    SG_CALLED_CONTROLLER: 'app\\.getController\\([\'"](\\w+)[\'"]\\)',
 
+    //code_items/models.js
+    SUPER_CALLED_MASK: 'super\\.call\\('
 }

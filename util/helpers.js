@@ -6,8 +6,9 @@ const {
     DW_IMPORTED_CLASS_DIRECT,
     METHOD_PLACEHOLDER,
     FUNCTION_MASK,
-    SFRA_CONTROLLER_MASK
- } = require('./constants');
+    SFRA_CONTROLLER_MASK,
+    FUNCTION_WITH_DESCRIPTION_MASK
+} = require('./constants');
 
 /**
  * Escapes letters
@@ -135,7 +136,7 @@ const getScope = (code, firstBracePosition, brace = '{') => {
 /**
  * Taking regexResult of function, collects func name, parameters, scope and some other statistic 
  * @param {strig} code 
- * @param {regex.exec() result} regexResult 
+ * @param {regex.exec() result} regexResult should be a regeEx search result where result[1] is function name and full match ends with parameters opening bracket
  */
 const collectFunctionData = (code, regexResult) => {
     const functionTextLengh = regexResult[0].length - 1 // last parenthesis doesn't count
@@ -208,6 +209,23 @@ const findAllEndpoints = code => {
 }
 
 /**
+ * Looks for all functions that have @'constructor in description
+ * @param {strig} code 
+ * @returns list of function detailed info objects
+ */
+const findAllConstructors = code => {
+    const functionsRegEx = new RegExp(FUNCTION_WITH_DESCRIPTION_MASK, 'gm');
+    let found;
+    const result = [];
+    while (found = functionsRegEx.exec(code)) {
+        if (found[0].includes('@constructor')) {
+            result.push(collectFunctionData(code, found));
+        }
+    }
+    return result;
+}
+
+/**
  * 
  * @param {regExp.exec() result} searchResult 
  * @param {Array} functionsArr array of function objects
@@ -230,15 +248,29 @@ const mapSearchResultToFunc = (searchResult, functionsArr) => {
     return result;
 }
 
-
+/**
+ * Helps to match script with test file which has the same name
+ * @param {Array} tests 
+ * @param {string} fileName 
+ */
+const getRelevantTestFile = (tests, fileName) => {
+    for (const test of tests) {
+    if (test.toLowerCase().endsWith(fileName.toLowerCase())) {
+        return test;
+    }
+}
+return null;
+}
 
 module.exports = {
     findSearchMatchVariables,
     createRegExWithVariables,
     createRegExWithMethodCalls,
+    findAllConstructors,
     findAllfunctions,
     findAllEndpoints,
     mapSearchResultToFunc,
     getScope,
-    findDwClassUsages
+    findDwClassUsages,
+    getRelevantTestFile
 }

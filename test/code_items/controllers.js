@@ -7,15 +7,6 @@ const {
     SG_CALLED_CONTROLLER 
 } = require('../../util/constants')
 
-const getRelevantIntegrationTest = (tests, fileName) => {
-        for (const test of tests) {
-        if (test.toLowerCase().endsWith(fileName.toLowerCase())) {
-            return test;
-        }
-    }
-    return null;
-}
-
 const countTests = test => {
     const code = sourceFiles.getFileData(test);
     const testRegExp = new RegExp(TEST_METHOD_MASK, 'gm');
@@ -33,7 +24,7 @@ describe('Controllers', function() {
             const code = sourceFiles.getFileData(file);
             const jsonEndPoints = helpers.findAllEndpoints(code).filter(ep => ep.scope.includes('res.json'));
             if (jsonEndPoints.length > 0) {
-                const intTest = getRelevantIntegrationTest(tests, fileName);
+                const intTest = helpers.getRelevantTestFile(tests, fileName);
                 if(!intTest) {
                     violations.push(`\nSCRIPT: ${file}\n No integration test with name ${fileName} was found, while controller ${fileName} has endpoints that return json: ${jsonEndPoints.map(e => '\n' + e.name)}\n`)
                 } else {
@@ -77,9 +68,9 @@ describe('Controllers', function() {
                 calledControllers.push(`\n${found[0]}`);
             }
             if (calledControllers.length > 0) {
-                violations.push(`\nSCRIPT: ${file}\n Some controllers call other controllers controllers: ${calledControllers}`)
+                violations.push(`\nSCRIPT: ${file}\n other controllers called: ${calledControllers}`)
             }
         })
-        assert.isEmpty(violations, `Some endpoints replace controllers: ${violations}\n`);
+        assert.isEmpty(violations, `Some controllers call other controllers: ${violations}\n`);
     });
 });

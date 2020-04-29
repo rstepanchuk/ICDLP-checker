@@ -15,33 +15,6 @@ const getCartrides = () => {
     return sortCartridgesByVersions(cartridges);
 }
 
-const getFiles = (namePart, path, options) => {
-    let toSkip = [];
-    let toPick = [];
-    if (options) {
-        toSkip = options.skip || [];
-        toPick = options.pick ? options.pick.map(name => `\\${name.replace(/\//g,'\\')}\\`) : [];
-    }
-    const dirPath = path ? sourcePath + path : sourcePath;
-    return _getFiles(namePart, dirPath, toSkip, toPick)
-}
-
-const getSpecificVersionFiles = (namePart, version, options) => {
-    const versions = [].concat(version); // in order to be able to accept both single value or array of versions
-    const cartridges = getCartrides();
-    const targetCartridges = versions.reduce((result, v) => {
-        if (!cartridges[v]) {
-            throw new Error (`No cartridge version ${v} found`);
-        }
-        return result.concat(cartridges[v]);
-    }, []);
-    return targetCartridges.reduce((files, vers) => {
-        const path = `\\cartridges\\${vers}`
-        return files.concat(getFiles(namePart, path, options));
-    }, [])
-}
-
-
 const endingsDoMatch = (filename, namePart) => {
     if (!namePart) {
         return true;
@@ -66,6 +39,33 @@ const folderIsSkipped = (folderName, skippedArr) => {
         }
     }
     return false;
+}
+
+const getFiles = (namePart, path, options) => {
+    let toSkip = [];
+    let toPick = [];
+    if (options) {
+        toSkip = options.skip || [];
+        toPick = options.pick ? options.pick.map(name => `\\${name.replace(/\//g,'\\')}\\`) : [];
+    }
+    const dirPath = path ? sourcePath + path : sourcePath;
+    return _getFiles(namePart, dirPath, toSkip, toPick)
+}
+
+const getSpecificVersionFiles = (namePart, version, options) => {
+    const versions = [].concat(version); // in order to be able to accept both single value or array of versions
+    const cartridges = getCartrides();
+    const targetCartridges = versions.reduce((result, v) => {
+        if (!cartridges[v]) {
+            throw new Error (`No cartridge version ${v} found`);
+        }
+        return result.concat(cartridges[v]);
+    }, []);
+    return targetCartridges.reduce((files, cartridge) => {
+        const path = `\\cartridges\\${cartridge}`
+        const filesToAdd = folderIsSkipped(cartridge, alwaysSkippedFolders) ? [] : getFiles(namePart, path, options)
+        return files.concat(filesToAdd);
+    }, [])
 }
 
 const _getFiles = (namePart, dirPath, skippedFolders =[], targetFolders=[]) => {
