@@ -108,13 +108,13 @@ const findDwClassUsages = (code, className) => {
 
 
 /**
- * Returns code text from certain position (scope beginning) to the end of the scope
+ * Returns position of scope end or throws an Error if scope is not finished within provided code
  * nested scopes are also included
  * @param {string} code 
  * @param {number} firstBracePosition position where target scope starts
  * @param {string} brace symbol which marks scope borders
  */
-const getScope = (code, firstBracePosition, brace = '{') => {
+const getScopeEnd = (code, firstBracePosition, brace = '{') => {
     const openCloseMap = {
         '{':'}',
         '(':')',
@@ -122,7 +122,7 @@ const getScope = (code, firstBracePosition, brace = '{') => {
     }
     let cursor = firstBracePosition + 1;
     let bracesCount = 1;
-    while (bracesCount > 0) {
+    while (bracesCount > 0 && cursor < code.length) {
         if (code[cursor] === openCloseMap[brace]) {
             bracesCount--;
         } else if (code[cursor] === brace) {
@@ -130,7 +130,23 @@ const getScope = (code, firstBracePosition, brace = '{') => {
         }
         cursor++;
     }
-    return code.substring(firstBracePosition, cursor);
+
+    if (bracesCount > 0) {
+        throw new Error(`getScope helper function was not able to find end of scope`)
+    }
+    return cursor;
+}
+
+/**
+ * Returns code text from certain position (scope beginning) to the end of the scope
+ * nested scopes are also included
+ * @param {string} code 
+ * @param {number} firstBracePosition position where target scope starts
+ * @param {string} brace symbol which marks scope borders
+ */
+const getScope = (code, firstBracePosition, brace = '{') => {
+    const end = getScopeEnd(code, firstBracePosition, brace);
+    return code.substring(firstBracePosition, end);
 }
 
 /**
@@ -270,6 +286,7 @@ module.exports = {
     findAllfunctions,
     findAllEndpoints,
     mapSearchResultToFunc,
+    getScopeEnd,
     getScope,
     findDwClassUsages,
     getRelevantTestFile

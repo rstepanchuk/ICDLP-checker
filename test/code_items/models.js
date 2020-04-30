@@ -35,6 +35,6 @@ describe('Models', function() {
                 }
             })
         })
-        assert.isEmpty(violations, `Some models do not call super constructors:\n ${violations}`);
+        assert.isEmpty(violations, `Some models do not call super constructors. This may mean that they replace original models:\n ${violations}`);
     });
 });

@@ -32,6 +32,7 @@ module.exports = {
                                                                 // used to search cases when methods called from class directy e.g. dw.order.OrderMgr.createOrder or require('dw/order/OrderMgr').createOrder
     SFRA_CONTROLLER_MASK: 'server\\.(?:get|post|use|repend|append|replace|extend)\\([^\\w]*(?:\'|")(\\w+)',
     FUNCTION_WITH_DESCRIPTION_MASK: `\\/\\*\\*(?:\\s|.)+?\\*\\/\\s+${FUNCTION_MASK}`,
+    NEW_LINE: '^',
 
     //general/documenation.js
     SFRA_SPECIFIC_VERSTION_MASK: `sfra\\D*${config.sfra}`,
@@ -84,5 +85,9 @@ module.exports = {
     SG_CALLED_CONTROLLER: 'app\\.getController\\([\'"](\\w+)[\'"]\\)',
 
     //code_items/models.js
-    SUPER_CALLED_MASK: 'super\\.call\\('
+    SUPER_CALLED_MASK: 'super\\.call\\(',
+
+    //code_items/templates.js
+    TAG_START_BOUNDARY_MASK: '<\\S',
+    HARDCODED_STRING_IN_TEMPLATE_MASK: '^\\s*[^$<\\s][^<]*',
 }

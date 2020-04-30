@@ -27,8 +27,8 @@ class DocumenationFile {
             start = this.content.indexOf('contents');
             headerLength = 'contents'.length;
         } 
-        if (!start) {
-            throw new Error('No table of contents section found (or table of contents doesn\' have header')
+        if (start === -1) {
+            throw new Error('No table of contents section found. If it\'s present check if it has "Table of Contents" or "Contents" header')
         }
         return isHeaderIncluded ? start : start + headerLength;
     }
@@ -44,6 +44,9 @@ class DocumenationFile {
         const fpRegExp = new RegExp(firstPoint, 'gm');
         fpRegExp.exec(this.content); // first match - bullet point found in table of contents
         const match2 = fpRegExp.exec(this.content); // second match - header of relevant clause found in text
+        if (!match2) {
+            throw new Error(`Unable to find start of guide main section in file ${this.name}`)
+        }
         return match2.index;
     }
 
@@ -83,7 +86,7 @@ class DocumenationFile {
         }
 
         if (!currentSection) {
-            throw new Error(`Section '${sectionName}' wasn't found. One of the reasons may be that it's not mentioned in table of content`)
+            throw new Error(`Section '${sectionName}' wasn't found in file ${this.name}. One of the reasons may be that it's not mentioned in table of content`)
         }
 
         const mainContent = this.getMainContent();        
