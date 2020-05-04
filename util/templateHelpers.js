@@ -1,5 +1,5 @@
 const helpers = require('./helpers');
-const SearchMatch = require('../models/SearchMatch');
+const Violation = require('../models/Violation');
 
 const { 
     HARDCODED_STRING_IN_TEMPLATE_MASK,
@@ -123,7 +123,7 @@ const getTagEnd = (code, tagNameStart) => {
 const findHardCodedStrings = code => {   
         const tagBoundRegExp = new RegExp(TAG_START_BOUNDARY_MASK, 'gm');
         const hardcodedStrRegExp = new RegExp(HARDCODED_STRING_IN_TEMPLATE_MASK, 'm');
-        const hardcodedStrings = [];
+        const violations = [];
         let cursor = 0;
         let tagFirstBoundary;
         let tagContentStart;
@@ -142,13 +142,12 @@ const findHardCodedStrings = code => {
                 tagContentEnd = cursor;
                 const content = code.substring(tagContentStart, tagContentEnd);
                 if (hardcodedStrRegExp.test(content)) {
-                    const match = new SearchMatch(content, code, tagContentStart)
-                    hardcodedStrings.push(match)
+                    violations.push(new Violation(content, tagContentStart))
                 }
             }
             tagBoundRegExp.lastIndex = cursor; // in order to avoid search in skipped area, regexp index for further search adapted to cursor
     }
-    return hardcodedStrings;
+    return violations;
 }
 
 
