@@ -152,7 +152,7 @@ if (sourceDocs.length === 0) {
     throw new Error("Documenation files were not found")
 }
 
-const docs = Promise.all(sourceDocs.map(file => _readDocFile(file)))
+const docs = Promise.all(sourceDocs.map(file => _readDocFile(file.path)))
     .then(result => {
         const spaces = /\s{2,100}|\t{1,100}|\n{1,100}/gm;
         const brokenNum =/(\d{1,4})\s?\.\s?(\d{1,4})(?:\s?(\.)\s?(\d{1,4}))?/ // sometimes unneccessary spaces appear in xx.xx.xx numbers eg 'version 20 .1.0'

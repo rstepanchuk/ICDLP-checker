@@ -51,9 +51,9 @@ describe('Services', function() {
             const serviceRegistries = [];
             const serviceRegistryRegExp = new RegExp(SERVICE_REGISTRY_MASK, 'gmi');
             sourceFiles.scripts.forEach(script => {
-                const foundInvalid = sourceFiles.getFileData(script).match(serviceRegistryRegExp);
+                const foundInvalid = script.getCode().match(serviceRegistryRegExp);
                 if (foundInvalid) {
-                    serviceRegistries.push(`\nSCRIPT: ${script}\nFOUND_IMPORTS: ${foundInvalid.map(imp => '\n      '+ imp)}}`);
+                    serviceRegistries.push(`\nSCRIPT: ${script.path}\nFOUND_IMPORTS: ${foundInvalid.map(imp => '\n      '+ imp)}}`);
                 }
             })
             assert.isEmpty(serviceRegistries, `ServiceRegistry imports found: ${serviceRegistries}`)
@@ -63,7 +63,7 @@ describe('Services', function() {
             const violations = [];
             const serviceRegistryRegExp = new RegExp(LOCAL_SERVICE_REGISTRY_MASK, 'm'); 
             sourceFiles.scripts.forEach(script => {
-                const code = sourceFiles.getFileData(script);
+                const code = script.getCode();
                 if (serviceRegistryRegExp.test(code)) { // if ServiceRegistry is mentioned on page
                     const servRegistryVars = helpers.findDwClassUsages(code, 'ServiceRegistry')
                     const createdServiceRegExp = helpers.createRegExWithVariables(servRegistryVars, SERVICE_CREATED_MASK, '|' );
@@ -81,7 +81,7 @@ describe('Services', function() {
                             presentMethods.getResponseLogMessage = new RegExp(GET_RESPONSE_LOG_MESSAGE_METHOD, 'm').test(service.scope);
                             if (!presentMethods.getRequestLogMessage || !presentMethods.getResponseLogMessage) {
                                 violations.push({
-                                    script,
+                                    script: script.path,
                                     service: service.name,
                                     presentMethods
                                 })

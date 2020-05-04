@@ -15,7 +15,7 @@ describe('Client-side JS', function() {
         it('URLs come from the server and hardcoded URLs should be avoided.', function() {
             const hardCodedUrls = [];
             sourceFiles.clientScripts.forEach(file => {
-                const code = sourceFiles.getFileData(file);
+                const code = file.getCode();
                 const urlRegExp = new RegExp(HARD_CODED_URL, 'gm')
                 let found = code.match(urlRegExp) || [];
                 found = found.filter(f => { // checking if any of found values are commented, thus can stay in code
@@ -23,7 +23,7 @@ describe('Client-side JS', function() {
                     return !commentedRegExp.test(f);
                 })
                 if (found.length > 0) {
-                    hardCodedUrls.push(`\nSCRIPT: ${file}\nURLS: ${found.map(f => `\n ${f}`)}`)
+                    hardCodedUrls.push(`\nSCRIPT: ${file.path}\nURLS: ${found.map(f => `\n ${f}`)}`)
                 }
             })
             assert.isEmpty(hardCodedUrls, `Hardcoded urls were found: ${hardCodedUrls}`);

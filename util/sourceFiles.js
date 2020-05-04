@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const config = require('./config');
+const CodeFile = require('../models/CodeFile');
 
 const sourcePath = config.sourcePath;
 const alwaysSkippedFolders = ['node_modules', 'app_storefront_core', 'app_storefront_controllers'];
@@ -49,7 +50,8 @@ const getFiles = (namePart, path, options) => {
         toPick = options.pick ? options.pick.map(name => `\\${name.replace(/\//g,'\\')}\\`) : [];
     }
     const dirPath = path ? sourcePath + path : sourcePath;
-    return _getFiles(namePart, dirPath, toSkip, toPick)
+    const result = _getFiles(namePart, dirPath, toSkip, toPick);
+    return result.map(r => new CodeFile(r));
 }
 
 const getSpecificVersionFiles = (namePart, version, options) => {
@@ -98,9 +100,6 @@ const getJSON = () => {
     return Object.assign({}, json);
 }
 
-const getFileData = (filePath) => {
-    return fs.readFileSync(filePath, 'UTF-8');
-}
 
 const sortCartridgesByVersions = (cartrideArr) => {
     const sfraSubstr = ['sfra']
@@ -133,8 +132,6 @@ const sortCartridgesByVersions = (cartrideArr) => {
     return result;
 }
 
-const getFileName = path => path.replace(/^.*[\\\/]/, '');
-
 
 module.exports.scripts = getFiles('.js|.ds', '/cartridges', { skip: ['static','client'] });
 module.exports.styles = getFiles('.css|.scss', '/cartridges', { pick: ['css', 'scss'] });
@@ -144,5 +141,3 @@ module.exports.json = getJSON();
 module.exports.cartridges = getCartrides();
 module.exports.getFiles = getFiles;
 module.exports.getSpecificVersionFiles = getSpecificVersionFiles;
-module.exports.getFileData = getFileData;
-module.exports.getFileName = getFileName;

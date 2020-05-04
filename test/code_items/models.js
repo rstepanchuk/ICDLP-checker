@@ -13,10 +13,10 @@ describe('Models', function() {
         const models = sourceFiles.getFiles('.js|.ds', '/cartridges', { pick: ['models'] });
         const tests = sourceFiles.getFiles('.js', '/test/unit');
         models.forEach(file => {
-            const fileName = sourceFiles.getFileName(file)
+            const fileName = file.getName()
             const unitTest =  helpers.getRelevantTestFile(tests, fileName);
             if (!unitTest) {
-                violations.push(file)
+                violations.push(file.path)
             }
         })
         assert.isEmpty(violations, `No unit tests were found for models: ${violations}`);
@@ -26,12 +26,12 @@ describe('Models', function() {
         const violations = [];
         const models = sourceFiles.getFiles('.js|.ds', '/cartridges', { pick: ['models'] });
         models.forEach(file => {
-            const code = sourceFiles.getFileData(file);
+            const code = file.getCode();
             const constructors = helpers.findAllConstructors(code);
             constructors.forEach(c => {
                 const superCalled =new RegExp(SUPER_CALLED_MASK, 'gm')
                 if (!superCalled.test(c.scope)) {
-                    violations.push(`MODEL: ${file}\n constructor '${c.name}' doesn\'t call parent constructor`)
+                    violations.push(`MODEL: ${file.path}\n constructor '${c.name}' doesn\'t call parent constructor`)
                 }
             })
         })

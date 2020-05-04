@@ -4,7 +4,7 @@ var sourceFiles = require('../../util/sourceFiles');
 describe('Metadata', function() {
 
     context('jobs.xml', function(){
-        const jobData = sourceFiles.getFiles('jobs.xml').map(f => sourceFiles.getFileData(f)).join('');
+        const jobData = sourceFiles.getFiles('jobs.xml').map(f => f.getCode()).join('');
 
         it('Default job metadata site should be RefArch', function() {
             var siteMentionings = [];

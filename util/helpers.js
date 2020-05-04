@@ -271,7 +271,7 @@ const mapSearchResultToFunc = (searchResult, functionsArr) => {
  */
 const getRelevantTestFile = (tests, fileName) => {
     for (const test of tests) {
-    if (test.toLowerCase().endsWith(fileName.toLowerCase())) {
+    if (test.getName().toLowerCase() === fileName.toLowerCase()) {
         return test;
     }
 }

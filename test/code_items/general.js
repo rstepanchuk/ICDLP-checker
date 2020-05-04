@@ -36,9 +36,9 @@ describe('General', function() {
         const invalidRequireRegExp = new RegExp(INVALID_REQUIRE_MASK, 'gm');
         const targetFiles = [].concat(sourceFiles.scripts, sourceFiles.templates);
         targetFiles.forEach(file => {
-            const foundInvalid = sourceFiles.getFileData(file).match(invalidRequireRegExp);
+            const foundInvalid = file.getCode().match(invalidRequireRegExp);
             if (foundInvalid) {
-                invalidImports.push(`\nSCRIPT: ${file}\nINVALID_IMPORTS: ${foundInvalid.map(imp => '\n      '+ imp)}}`);
+                invalidImports.push(`\nSCRIPT: ${file.path}\nINVALID_IMPORTS: ${foundInvalid.map(imp => '\n      '+ imp)}}`);
             }
         })
         assert.isEmpty(invalidImports, `Invalid imports found: ${invalidImports}`)
@@ -49,9 +49,9 @@ describe('General', function() {
         const toDoRegExp = new RegExp(TODO_MASK, 'gm');
         const toDos = [];
         sourceFiles.getFiles('', '/cartridges', { skip: ['static'] }).forEach(file => {
-            const foundTODO = sourceFiles.getFileData(file).match(toDoRegExp);
+            const foundTODO = file.getCode().match(toDoRegExp);
             if (foundTODO) {
-                toDos.push(`\nSCRIPT: ${file}\nFOUND: ${foundTODO.map(imp => '\n      '+ imp)}}`);
+                toDos.push(`\nSCRIPT: ${file.path}\nFOUND: ${foundTODO.map(imp => '\n      '+ imp)}}`);
             }
         })
         assert.isEmpty(toDos, `TODO's found: ${toDos}`);
@@ -61,12 +61,12 @@ describe('General', function() {
 
         const foundCustom = [];
         sourceFiles.scripts.forEach(file => {
-            const code = sourceFiles.getFileData(file);
+            const code = file.getCode();
             const sessionVars = findSearchMatchVariables(code, SESSION_VARIABLE_MASK); // find session that was saved to variables
             const sessionCustomRegExp = createRegExWithVariables(sessionVars, SESSION_CUSTOM_MASK, '|')// add found variables to regexp
             const sesCustom = code.match(sessionCustomRegExp);
             if (sesCustom) {
-                foundCustom.push(`\nSCRIPT: ${file}\nFOUND: ${sesCustom.map(found => '\n      '+ found)}}`)
+                foundCustom.push(`\nSCRIPT: ${file.path}\nFOUND: ${sesCustom.map(found => '\n      '+ found)}}`)
             }
         })
         assert.isEmpty(foundCustom, `Session.custom found: ${foundCustom}`)
@@ -76,14 +76,14 @@ describe('General', function() {
     
         const notClosed = [];
         sourceFiles.scripts.forEach(file => {
-            const code = sourceFiles.getFileData(file);
+            const code = file.getCode();
             const open = findSearchMatchVariables(code, READER_WRITER_VARIABLE_MASK);
             if (open.length > 0) {
                 const closedRegExp = createRegExWithVariables(open, CLOSED_VARIABLE_MASK)
                 const closed = code.match(closedRegExp) || [];
                 if (open.length !== closed.length) {
                     notClosed.push({
-                        script: file,
+                        script: file.path,
                         open,
                         closed
                     })
@@ -96,7 +96,7 @@ describe('General', function() {
     it('All SeekableIterators should be explicitly closed', function() {
         const violations = [];
         sourceFiles.scripts.forEach(file =>{
-            const code = sourceFiles.getFileData(file);
+            const code = file.getCode();
             for (let cl in METHODS_WITH_SEEKABLE_ITERATOR) {
                 const classVariables = findDwClassUsages(code, cl);
                 if (classVariables.length > 0) {
@@ -115,7 +115,7 @@ describe('General', function() {
 
                     }
                     if (notClosed.length > 0) {
-                        violations.push(`\nSCRIPT: ${file}, \nNOT CLOSED: ${notClosed}`)
+                        violations.push(`\nSCRIPT: ${file.path}, \nNOT CLOSED: ${notClosed}`)
                     }
                 }
             }
