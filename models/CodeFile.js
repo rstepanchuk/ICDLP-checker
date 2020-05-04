@@ -6,7 +6,7 @@ const {
 class CodeFile {
     constructor(path) {
         this.path = path;
-        this.newLines = [];
+        this._rows = [];
     }
 
     getName() {
@@ -18,13 +18,10 @@ class CodeFile {
     }
 
     /**
-     * gets indexes of all new lines in code and saves it to instance newLines property
+     * defines indexes of all new lines in code and saves it to instance _newLines property
      * @returns {Array} array of indexes
      */
-    setNewLinesIndexes() {
-        if (this.newLines.length > 0) {
-            return;
-        }
+    _defineRowsInCode() {
         const code = this.getCode();
         const newLineRegExp = new RegExp(NEW_LINE, 'gm');
         const result = [];
@@ -33,8 +30,17 @@ class CodeFile {
             newLineRegExp.lastIndex += 2 // as far as new line has no length, regExp last Index updated manually. Otherwize it will always find first match
             result.push(found.index)
         }
-        this.newLines = result;
-}
+        this._rows = result;
+        return result;
+    }
+
+    /**
+     * returns _newLines property value, or if it's empty, defines new lines and returns result;
+     * @returns {Array} array of indexes
+     */
+    getCodeRows() {
+        return this._rows.length > 0 ? this._rows : this._defineRowsInCode()
+    }
     
 }
 
