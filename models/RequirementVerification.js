@@ -11,6 +11,11 @@ class RequirementVerification {
         this.currentAudit = null;
     }
 
+    static perform(files, callBack) {
+        return new RequirementVerification('DUMMY HEADER')
+            .doVerification(files, callBack);
+    }
+
     /**
      * creates FileAudit object for provided file and saves as current check. 
      * Until 'saveSelectedFileAuditResult' is called all found violations will be put in this fileAudit
@@ -21,16 +26,23 @@ class RequirementVerification {
     }
 
     /**
-     * If any errors found, consolidates current audit result in one string and saves it to failedAudits property
+     * If any errors found, adds current audit to failed audit list
      * Clears current file audit 
-     * @param {boolean} withRows 
-     * @param {boolean} beautify 
      */
-    saveSelectedFileAuditResult(withRows=false, beautify=true) {
+    saveSelectedFileAuditResult() {
         if (this.currentAudit.isFailed()) {
-            this.failedAudits.push(this.currentAudit.getFailedAuditMessage(this.verifiedIssue.toUpperCase(), withRows, beautify))
+            this.failedAudits.push(this.currentAudit)
         }
         this.currentAudit = null;
+    }
+
+    doVerification(files, callBack){
+        files.forEach(file => {
+            this.selectFileForAudit(file);
+            callBack(file, this);
+            this.saveSelectedFileAuditResult();
+        });
+        return this;
     }
 
     /**
@@ -64,9 +76,17 @@ class RequirementVerification {
      * Consolidates whole information about errors in all audited files into one string
      * @param {string} issueDescription this will be a first line after which detailed information for each file will follow
      */
-    generateErrorMessage(issueDescription) {
-        return `${issueDescription}:\n${this.failedAudits.join('\n\n')}\n`
+    generateErrorMessage(issueDescription, options) {
+        const withRows = options && options.hasOwnProperty('withRows') ? options.withRows : false;
+        const beautify = options && options.hasOwnProperty('beautify') ? options.beautify : true;
+        const failedAuditReports = this.failedAudits.map(audit => (
+            audit.getFailedAuditMessage(this.verifiedIssue.toUpperCase(), withRows, beautify))
+            );
+
+        return `${issueDescription}:\n${failedAuditReports.join('\n\n')}\n`
     }
+
+
 }
 
 module.exports = RequirementVerification;

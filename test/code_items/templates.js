@@ -5,7 +5,7 @@ const RequirementVerification = require('../../models/RequirementVerification');
 
 const { 
     ISCACHE_TAG_MASK,
-    ISPRING_ENCODING_OFF_MASK,
+    ENCODING_OFF_MASK,
     INLINE_STYLES_MASK
 } = require('../../util/constants');
 
@@ -19,7 +19,7 @@ describe('Templates', function() {
             audit.addMultipleViolations(templateHelpers.findHardCodedStrings(code));
             audit.saveSelectedFileAuditResult(true);
         });
-        assert.isTrue(audit.isSuccessul(), audit.generateErrorMessage('Some templates have hardcoded strings'));
+        assert.isTrue(audit.isSuccessul(), audit.generateErrorMessage('Some templates have hardcoded strings', {withRows: true}));
     });
 
     it('Middleware cache should be used instead of <iscache>.', function() {
@@ -38,18 +38,16 @@ describe('Templates', function() {
     });
 
     it('<isprint encoding> should not be off', function() {
-        const audit = new RequirementVerification('endcoding is off');
-        sourceFiles.templates.forEach(template => {
-            audit.selectFileForAudit(template);
-            const code = template.getCode();
-            const isCacheRegExp = new RegExp(ISPRING_ENCODING_OFF_MASK, 'gm')
-            let found;
-            while(found = isCacheRegExp.exec(code)) {
-                audit.addViolation(found[0], found.index)
-            }
-            audit.saveSelectedFileAuditResult(true);
+        const encodingOffRegExp = new RegExp(ENCODING_OFF_MASK, 'm')
+        const result = RequirementVerification.perform(sourceFiles.templates, (template, audit) => {
+            const isPrintTags = templateHelpers.findAllIsPrintTags(template.getCode());
+            isPrintTags.forEach(tag => {
+                if (encodingOffRegExp.test(tag.text)) {
+                    audit.addViolation(tag.text, tag.index)
+                }
+            })
         });
-        assert.isTrue(audit.isSuccessul(), audit.generateErrorMessage('Some templates have <isprint encoding="off"> tags'));
+        assert.isTrue(result.isSuccessul(), result.generateErrorMessage('Some templates have <isprint encoding="off"> tags'));
     });
 
     it('Inline styles should not be used.', function() {

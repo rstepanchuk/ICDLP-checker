@@ -1,5 +1,4 @@
 const helpers = require('./helpers');
-const Violation = require('../models/Violation');
 
 const { 
     HARDCODED_STRING_IN_TEMPLATE_MASK,
@@ -40,7 +39,7 @@ const cursorIsAtTarget = (code, cursor, target) => {
  * @param {string} code 
  * @param {number} cursor 
  * @param {array} target e.g. ['script','isscript']
- * @returns {string/null} e.g 'scirpt'
+ * @returns {string/null} e.g 'script'
  */
 const atWhichOfTagsIsCursor = (code, cursor, targetArr) => {
     for (const target of targetArr) {
@@ -88,7 +87,7 @@ const cursorIsAfterTarget = (code, cursor, target) => {
  * <tr  class="cart-row <isif condition="${gcliloopstate.first}"> first <iselseif condition="${gcliloopstate.last}"> last</isif>">
  * @param {string} code 
  * @param {number} tagNameStart position where tag name starts for e.g. for tag <iscomment> it should be "i" position
- * @returns {number} position in code
+ * @returns {number} position in code after braces closed
  */
 const getTagEnd = (code, tagNameStart) => {
     let cursor = tagNameStart;
@@ -118,7 +117,7 @@ const getTagEnd = (code, tagNameStart) => {
 /**
  * gets all hardcoded string in provided template code
  * @param {string} code 
- * @returns {array} of SearchMatch objects
+ * @returns {array} of object objects
  */
 const findHardCodedStrings = code => {   
         const tagBoundRegExp = new RegExp(TAG_START_BOUNDARY_MASK, 'gm');
@@ -136,13 +135,14 @@ const findHardCodedStrings = code => {
             } else {
                 cursor = getTagEnd(code, cursor)
                 tagContentStart = cursor;
-                while (code[cursor] !== '<' && cursor < code.length ) {
+                while (!(code[cursor] === '<' && code[cursor+1] !== ' ') && 
+                cursor < code.length ) {
                     cursor++
                 }
                 tagContentEnd = cursor;
                 const content = code.substring(tagContentStart, tagContentEnd);
                 if (hardcodedStrRegExp.test(content)) {
-                    violations.push(new Violation(content, tagContentStart))
+                    violations.push({value: content, index: tagContentStart });
                 }
             }
             tagBoundRegExp.lastIndex = cursor; // in order to avoid search in skipped area, regexp index for further search adapted to cursor
@@ -150,9 +150,30 @@ const findHardCodedStrings = code => {
     return violations;
 }
 
+const findAllIsPrintTags = code => {   
+    const tagBoundRegExp = new RegExp(TAG_START_BOUNDARY_MASK, 'gm');
+    const result = [];
+    let cursor = 0;
+    let tagFirstBoundary;
+    while (tagFirstBoundary = tagBoundRegExp.exec(code)) {
+        cursor = tagFirstBoundary.index + 1 ;
+        const isPrintTag = atWhichOfTagsIsCursor(code, cursor, ['isprint']);
+        if (isPrintTag) {
+            const tagEnd = getTagEnd(code, cursor);
+            result.push({
+                text:  code.substring(cursor - 1 , tagEnd),
+                index: cursor
+            })
+            cursor = tagEnd;
+        } 
+    }
+    return result;
+}
+
 
 
 module.exports = {
     getTagEnd,
-    findHardCodedStrings
+    findHardCodedStrings,
+    findAllIsPrintTags
 }
