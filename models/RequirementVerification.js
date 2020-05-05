@@ -2,17 +2,15 @@ const FileAudit = require('./FileAudit');
 
 /**
  * Public class that incapsulates logic of collecting and representing detailed information about all found errors
- * @param {string} verifiedIssue short title which represents an issue verification is aimed to check.
  */
 class RequirementVerification {
-    constructor(verifiedIssue){
-        this.verifiedIssue = verifiedIssue;
+    constructor(){
         this.failedAudits = []
         this.currentAudit = null;
     }
 
     static perform(files, callBack) {
-        return new RequirementVerification('DUMMY HEADER')
+        return new RequirementVerification()
             .doVerification(files, callBack);
     }
 
@@ -80,7 +78,7 @@ class RequirementVerification {
         const withRows = options && options.hasOwnProperty('withRows') ? options.withRows : false;
         const beautify = options && options.hasOwnProperty('beautify') ? options.beautify : true;
         const failedAuditReports = this.failedAudits.map(audit => (
-            audit.getFailedAuditMessage(this.verifiedIssue.toUpperCase(), withRows, beautify))
+            audit.getFailedAuditMessage(withRows, beautify))
             );
 
         return `${issueDescription}:\n${failedAuditReports.join('\n\n')}\n`

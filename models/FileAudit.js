@@ -29,15 +29,14 @@ class FileAudit {
 
     /**
      * Consolidates all found violations and file path into one string;
-     * @param {string} violationsHeader description of the problem. This will be a header for all violation occurences in file
      * @param {boolean} withRows 
      */
-    getFailedAuditMessage(violationsHeader, withRows=false, beautify=true) {
+    getFailedAuditMessage(withRows=false, beautify=true) {
         if (withRows) {
             this.defineRowsForViolations();
         }
         const violationMessages = this.violations.map(v => v.getMsg(beautify))
-        return `SOURCE: ${this.file.path}\n${violationsHeader}:\n${violationMessages.join('\n')}`
+        return `SOURCE: ${this.file.path}\n${violationMessages.join('\n')}`
     }
 }
 

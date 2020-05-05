@@ -16,9 +16,9 @@ class Violation {
     getMsg(beautify = true) {
         const displayValue = beautify ? this.value.replace(/\s+/gm, ' ').trim() : this.value;
         if (this.row === -1) {
-            return `  ${displayValue}`;
+            return `   ${displayValue}`;
         } 
-        return `  row ${this.row}: ${displayValue}`
+        return `   row ${this.row}: ${displayValue}`
     }
 
     setRow(row) {
