@@ -5,7 +5,11 @@ const RequirementVerification = require('../../models/RequirementVerification');
 
 const { 
     ISCACHE_TAG_MASK,
-    ENCODING_OFF_MASK
+    ENCODING_OFF_MASK,
+    ISSCRIPT_MASK,
+    ISSCRIPT_ALLOWED_ASSETS_REQUIRE_MASK,
+    ISSCRIPT_ALLOWED_ADD_ASSETS_MASK,
+    ISSCRIPT_ALLOWED_EMPTY_LINE_MAKS
 } = require('../../util/constants');
 
 
@@ -15,6 +19,23 @@ describe('Templates', function() {
             audit.addMultipleViolations(templateHelpers.findHardCodedStrings(template.getCode()));
         });
         assert.isTrue(result.isSuccessul(), result.generateErrorMessage('Some templates have hardcoded strings', {withRows: true}));
+    });
+
+    it('<isscript> should be only used to add assets.', function() {
+        const allowedIsScriptRegExp = new RegExp(`${ISSCRIPT_ALLOWED_EMPTY_LINE_MAKS}|${ISSCRIPT_ALLOWED_ASSETS_REQUIRE_MASK}|${ISSCRIPT_ALLOWED_ADD_ASSETS_MASK}`)
+        const result = RequirementVerification.perform(sourceFiles.templates, (template, audit) => {
+            const isscriptRegExp = new RegExp(ISSCRIPT_MASK, 'gm');
+            const code = template.getCode();
+            let found;
+            while (found = isscriptRegExp.exec(code)){
+                const lines = found[1].split(/^/m);
+                const forbiddenLines = lines.filter(line => !allowedIsScriptRegExp.test(line));
+                if (forbiddenLines.length > 0) {
+                    audit.addViolation(found[0], found.index)
+                }
+            }
+        });
+        assert.isTrue(result.isSuccessul(), result.generateErrorMessage('Some templates have <isscript> tag with extended logic', {withRows: true}));
     });
 
     it('Middleware cache should be used instead of <iscache>', function() {
