@@ -22,7 +22,7 @@ describe('Templates', function() {
         assert.isTrue(audit.isSuccessul(), audit.generateErrorMessage('Some templates have hardcoded strings', {withRows: true}));
     });
 
-    it('Middleware cache should be used instead of <iscache>.', function() {
+    it('Middleware cache should be used instead of <iscache>', function() {
         const audit = new RequirementVerification('<iscache> tag used');
         sourceFiles.templates.forEach(template => {
             audit.selectFileForAudit(template);
@@ -50,18 +50,10 @@ describe('Templates', function() {
         assert.isTrue(result.isSuccessul(), result.generateErrorMessage('Some templates have <isprint encoding="off"> tags'));
     });
 
-    it('Inline styles should not be used.', function() {
-        const audit = new RequirementVerification('Inline styles used');
-        sourceFiles.templates.forEach(template => {
-            audit.selectFileForAudit(template);
-            const code = template.getCode();
-            const isCacheRegExp = new RegExp(INLINE_STYLES_MASK, 'gm')
-            let found;
-            while(found = isCacheRegExp.exec(code)) {
-                audit.addViolation(found[0], found.index)
-            }
-            audit.saveSelectedFileAuditResult(true);
+    it('Inline styles should not be used', function() {
+        const result = RequirementVerification.perform(sourceFiles.templates, (template, audit) => {
+            audit.addMultipleViolations(templateHelpers.findAllInlineStylesInTags(template.getCode()))
         });
-        assert.isTrue(audit.isSuccessul(), audit.generateErrorMessage('In some templates inline styles are used'));
+        assert.isTrue(result.isSuccessul(), result.generateErrorMessage('In some templates inline styles are used', {withRows: true}));
     });
 });

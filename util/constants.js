@@ -91,7 +91,5 @@ module.exports = {
     TAG_START_BOUNDARY_MASK: '<\\S',
     HARDCODED_STRING_IN_TEMPLATE_MASK: '^\\s*[^$<\\s][^<]*',
     ISCACHE_TAG_MASK: '<iscache[^>]*>',
-    ENCODING_OFF_MASK: 'encoding\\s?=\\s?[\'"]off[\'"]',
-    INLINE_STYLES_MASK: '<(?!isprint)[^<>]*style\\s?=\\s?"[^"]*"[^<>]*>'
-
+    ENCODING_OFF_MASK: 'encoding\\s?=\\s?[\'"]off[\'"]'
 }

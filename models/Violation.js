@@ -5,7 +5,7 @@
  */
 class Violation {
     constructor(value, index) {
-        if (!value || !index) {
+        if (!value || (!index && index !==0 )) {
             throw new Error(`One of mandatory parameters for Violation creation weren't provided. value:${value} index: ${index}`)
         }
         this.value = value;
