@@ -20,7 +20,7 @@
   "spreadSheet": "1LFCqtO1v0KMW7EbE7oD8_EfPAdXeevcmOxQVYFEHLBw",
   "dependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.1.1",
+    "mocha": "^10.2.0",
     "node-stream-zip": "^1.9.1",
     "sgmf-scripts": "^2.3.0"
   }
